@@ -13,6 +13,10 @@ declare(strict_types=1);
 
 namespace Tappet\Core\Fixture;
 
+/**
+ * @template-covariant TModel of ModelInterface
+ * @template-implements FixtureInterface<TModel>
+ */
 abstract class AbstractFixture implements FixtureInterface
 {
 }

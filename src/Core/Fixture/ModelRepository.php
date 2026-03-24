@@ -25,7 +25,7 @@ class ModelRepository implements ModelRepositoryInterface
      */
     private $fixtureApi;
     /**
-     * @var array<string, array<string, ModelInterface>>
+     * @var array<class-string<FixtureInterface<ModelInterface>>, array<string, array{'fixture': FixtureInterface<ModelInterface>, 'model': ModelInterface}>>
      */
     private $fixtureModels = [];
 
@@ -34,35 +34,41 @@ class ModelRepository implements ModelRepositoryInterface
         $this->fixtureApi = $fixtureApi;
     }
 
-    public function getFixtureModel(string $modelFqcn, string $handle): ModelInterface
+    public function getFixtureModel(string $modelClass, string $handle): ModelInterface
     {
-        if (!isset($this->fixtureModels[$modelFqcn][$handle])) {
+        if (!isset($this->fixtureModels[$modelClass][$handle])) {
             throw new RuntimeException(sprintf(
                 'Fixture model not found for "%s" with handle "%s"',
-                $modelFqcn,
+                $modelClass,
                 $handle
             ));
         }
 
-        return $this->fixtureModels[$modelFqcn][$handle];
+        return $this->fixtureModels[$modelClass][$handle]['model'];
     }
 
+    /**
+     * @param FixtureInterface<ModelInterface> $fixture
+     */
     public function loadFixture(string $handle, FixtureInterface $fixture): void
     {
-        $response = $this->fixtureApi->loadFixture($handle, serialize($fixture));
+        $response = $this->fixtureApi->loadFixture($fixture::class, serialize($fixture));
 
         $model = unserialize($response);
 
-        if (!($model instanceof ($fixture->getModelFqcn()))) {
+        if (!($model instanceof ($fixture::getModelClass()))) {
             throw new RuntimeException(sprintf(
                 'Fixture "%s" model of type "%s" returned from API does not match expected type "%s"',
                 $fixture::class,
                 $model::class,
-                $fixture->getModelFqcn()
+                $fixture::getModelClass()
             ));
         }
 
-        $this->fixtureModels[$fixture->getModelFqcn()][$handle] = $model;
+        $this->fixtureModels[$fixture::getModelClass()][$handle] = [
+            'fixture' => $fixture,
+            'model' => $model,
+        ];
     }
 
     public function purge(): void
@@ -71,15 +77,16 @@ class ModelRepository implements ModelRepositoryInterface
             return;
         }
 
-        $handlesToPurge = [];
+        $modelsToPurge = [];
 
-        foreach ($this->fixtureModels as $modelFqcn => $models) {
-            foreach (array_keys($models) as $handle) {
-                $handlesToPurge[$modelFqcn][] = $handle;
+        foreach ($this->fixtureModels as $models) {
+            foreach ($models as $data) {
+                // Models should be purged in reverse order of loading due to likely dependencies between them.
+                array_unshift($modelsToPurge, ['fixture' => serialize($data['fixture']), 'model' => serialize($data['model'])]);
             }
         }
 
-        $this->fixtureApi->purge($handlesToPurge);
+        $this->fixtureApi->purge($modelsToPurge);
 
         $this->fixtureModels = [];
     }

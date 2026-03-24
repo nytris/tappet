@@ -47,11 +47,14 @@ class Environment implements EnvironmentInterface
         return new Field($this->automation, $handle);
     }
 
-    public function getFixtureModel(string $modelFqcn, string $handle): ModelInterface
+    public function getFixtureModel(string $modelClass, string $handle): ModelInterface
     {
-        return $this->modelRepository->getFixtureModel($modelFqcn, $handle);
+        return $this->modelRepository->getFixtureModel($modelClass, $handle);
     }
 
+    /**
+     * @param FixtureInterface<ModelInterface> $fixture
+     */
     public function loadFixture(string $handle, FixtureInterface $fixture): void
     {
         $this->modelRepository->loadFixture($handle, $fixture);

@@ -57,13 +57,13 @@ class ModelRepositoryTest extends AbstractTestCase
         static::assertInstanceOf(ModelRepositoryTestModel::class, $result);
     }
 
-    public function testLoadFixtureCallsFixtureApiWithHandle(): void
+    public function testLoadFixtureCallsFixtureApiWithFixtureClass(): void
     {
         $fixture = new ModelRepositoryTestFixture();
         $model = new ModelRepositoryTestModel();
 
         $this->fixtureApi->expects()
-            ->loadFixture('myHandle', serialize($fixture))
+            ->loadFixture($fixture::class, serialize($fixture))
             ->once()
             ->andReturn(serialize($model));
 
@@ -96,7 +96,7 @@ class ModelRepositoryTest extends AbstractTestCase
         $this->modelRepository->purge();
     }
 
-    public function testPurgeCallsFixtureApiWithLoadedHandles(): void
+    public function testPurgeCallsFixtureApiWithLoadedModels(): void
     {
         $fixture = new ModelRepositoryTestFixture();
         $model = new ModelRepositoryTestModel();
@@ -104,7 +104,27 @@ class ModelRepositoryTest extends AbstractTestCase
         $this->modelRepository->loadFixture('myHandle', $fixture);
 
         $this->fixtureApi->expects()
-            ->purge([ModelRepositoryTestModel::class => ['myHandle']])
+            ->purge([['fixture' => serialize($fixture), 'model' => serialize($model)]])
+            ->once();
+
+        $this->modelRepository->purge();
+    }
+
+    public function testPurgeCallsFixtureApiWithLoadedModelsInReverseOrder(): void
+    {
+        $fixture1 = new ModelRepositoryTestFixture();
+        $model1 = new ModelRepositoryTestModel();
+        $fixture2 = new ModelRepositoryTestFixture2();
+        $model2 = new ModelRepositoryTestModel2();
+        $this->fixtureApi->allows('loadFixture')->andReturn(serialize($model1), serialize($model2));
+        $this->modelRepository->loadFixture('myHandle1', $fixture1);
+        $this->modelRepository->loadFixture('myHandle2', $fixture2);
+
+        $this->fixtureApi->expects()
+            ->purge([
+                ['fixture' => serialize($fixture2), 'model' => serialize($model2)],
+                ['fixture' => serialize($fixture1), 'model' => serialize($model1)],
+            ])
             ->once();
 
         $this->modelRepository->purge();
@@ -134,12 +154,25 @@ class ModelRepositoryTest extends AbstractTestCase
 
 /**
  * Concrete fixture class used as a test double.
+ *
+ * @implements FixtureInterface<ModelRepositoryTestModel>
  */
 class ModelRepositoryTestFixture implements FixtureInterface
 {
-    public function getModelFqcn(): string
+    public static function getModelClass(): string
     {
         return ModelRepositoryTestModel::class;
+    }
+}
+
+/**
+ * @implements FixtureInterface<ModelRepositoryTestModel2>
+ */
+class ModelRepositoryTestFixture2 implements FixtureInterface
+{
+    public static function getModelClass(): string
+    {
+        return ModelRepositoryTestModel2::class;
     }
 }
 
@@ -147,6 +180,9 @@ class ModelRepositoryTestFixture implements FixtureInterface
  * Concrete model class used as a test double.
  */
 class ModelRepositoryTestModel implements ModelInterface
+{
+}
+class ModelRepositoryTestModel2 implements ModelInterface
 {
 }
 

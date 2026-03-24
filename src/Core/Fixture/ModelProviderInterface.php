@@ -14,16 +14,16 @@ declare(strict_types=1);
 namespace Tappet\Core\Fixture;
 
 /**
- * Class ModelProviderInterface.
+ * Interface ModelProviderInterface.
  */
 interface ModelProviderInterface
 {
     /**
      * @template TModel of ModelInterface
-     * @param class-string<TModel> $modelFqcn
+     * @param class-string<TModel> $modelClass
      * @param string $handle
      *
      * @return TModel
      */
-    public function getFixtureModel(string $modelFqcn, string $handle): ModelInterface;
+    public function getFixtureModel(string $modelClass, string $handle): ModelInterface;
 }

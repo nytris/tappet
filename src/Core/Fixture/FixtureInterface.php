@@ -14,14 +14,16 @@ declare(strict_types=1);
 namespace Tappet\Core\Fixture;
 
 /**
- * Class FixtureInterface.
+ * Interface FixtureInterface.
  *
  * Fixtures are automatically deleted again via the API after the scenario has run.
+ *
+ * @template-covariant TModel of ModelInterface
  */
 interface FixtureInterface
 {
     /**
-     * @return class-string<ModelInterface>
+     * @return class-string<TModel>
      */
-    public function getModelFqcn(): string;
+    public static function getModelClass(): string;
 }

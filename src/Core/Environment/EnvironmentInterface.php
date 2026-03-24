@@ -15,6 +15,7 @@ namespace Tappet\Core\Environment;
 
 use Tappet\Core\Environment\Field\FieldInterface;
 use Tappet\Core\Fixture\FixtureInterface;
+use Tappet\Core\Fixture\ModelInterface;
 use Tappet\Core\Fixture\ModelProviderInterface;
 
 interface EnvironmentInterface extends ModelProviderInterface
@@ -23,6 +24,9 @@ interface EnvironmentInterface extends ModelProviderInterface
 
     public function getField(string $handle): FieldInterface;
 
+    /**
+     * @param FixtureInterface<ModelInterface> $fixture
+     */
     public function loadFixture(string $handle, FixtureInterface $fixture): void;
 
     public function visitPage(string $url): void;

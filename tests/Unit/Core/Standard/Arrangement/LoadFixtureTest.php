@@ -16,6 +16,7 @@ namespace Tappet\Tests\Unit\Core\Standard\Arrangement;
 use Mockery\MockInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
 use Tappet\Core\Fixture\FixtureInterface;
+use Tappet\Core\Fixture\ModelInterface;
 use Tappet\Core\Standard\Arrangement\LoadFixture;
 use Tappet\Tests\AbstractTestCase;
 
@@ -27,6 +28,7 @@ use Tappet\Tests\AbstractTestCase;
 class LoadFixtureTest extends AbstractTestCase
 {
     private EnvironmentInterface&MockInterface $environment;
+    /** @var FixtureInterface<ModelInterface>&MockInterface */
     private FixtureInterface&MockInterface $fixture;
     private LoadFixture $arrangement;
 

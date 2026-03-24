@@ -16,11 +16,12 @@ namespace Tappet\Core\Standard\Arrangement;
 use Tappet\Core\Arrangement\AbstractArrangement;
 use Tappet\Core\Environment\EnvironmentInterface;
 use Tappet\Core\Fixture\FixtureInterface;
+use Tappet\Core\Fixture\ModelInterface;
 
 class LoadFixture extends AbstractArrangement
 {
     /**
-     * @var FixtureInterface
+     * @var FixtureInterface<ModelInterface>
      */
     private $fixture;
     /**
@@ -28,12 +29,18 @@ class LoadFixture extends AbstractArrangement
      */
     private $handle;
 
+    /**
+     * @param FixtureInterface<ModelInterface> $fixture
+     */
     public function __construct(string $handle, FixtureInterface $fixture)
     {
         $this->fixture = $fixture;
         $this->handle = $handle;
     }
 
+    /**
+     * @return FixtureInterface<ModelInterface>
+     */
     public function getFixture(): FixtureInterface
     {
         return $this->fixture;

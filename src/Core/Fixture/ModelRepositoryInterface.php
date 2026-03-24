@@ -14,10 +14,13 @@ declare(strict_types=1);
 namespace Tappet\Core\Fixture;
 
 /**
- * Class ModelRepositoryInterface.
+ * Interface ModelRepositoryInterface.
  */
 interface ModelRepositoryInterface extends ModelProviderInterface
 {
+    /**
+     * @param FixtureInterface<ModelInterface> $fixture
+     */
     public function loadFixture(string $handle, FixtureInterface $fixture): void;
 
     public function purge(): void;
