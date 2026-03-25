@@ -14,8 +14,9 @@ declare(strict_types=1);
 namespace Tappet\Core\Action;
 
 use Tappet\Core\Environment\EnvironmentInterface;
+use Tappet\Core\Step\StepInterface;
 
-interface ActionInterface
+interface ActionInterface extends StepInterface
 {
     // TODO: Error/fail validation if no OpenPage arrangement (or action, or assertion?) has been provided
     //       by the point the first action is performed.

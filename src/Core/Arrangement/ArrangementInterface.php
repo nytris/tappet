@@ -14,8 +14,9 @@ declare(strict_types=1);
 namespace Tappet\Core\Arrangement;
 
 use Tappet\Core\Environment\EnvironmentInterface;
+use Tappet\Core\Step\StepInterface;
 
-interface ArrangementInterface
+interface ArrangementInterface extends StepInterface
 {
     public function perform(EnvironmentInterface $environment): void;
 }

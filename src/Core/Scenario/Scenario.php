@@ -17,10 +17,10 @@ use Tappet\Core\Action\ActionInterface;
 use Tappet\Core\Arrangement\ArrangementInterface;
 use Tappet\Core\Assertion\AssertionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
-use Tappet\Core\Step\ActStep;
-use Tappet\Core\Step\ArrangeStep;
-use Tappet\Core\Step\AssertStep;
-use Tappet\Core\Step\StepInterface;
+use Tappet\Core\Stage\ActStage;
+use Tappet\Core\Stage\ArrangeStage;
+use Tappet\Core\Stage\AssertStage;
+use Tappet\Core\Stage\StageInterface;
 
 class Scenario implements ScenarioInterface
 {
@@ -33,9 +33,9 @@ class Scenario implements ScenarioInterface
      */
     private $environment;
     /**
-     * @var StepInterface[]
+     * @var StageInterface[]
      */
-    private $steps = [];
+    private $stages = [];
 
     public function __construct(EnvironmentInterface $environment, string $description)
     {
@@ -45,21 +45,21 @@ class Scenario implements ScenarioInterface
 
     public function act(ActionInterface ...$actions): ScenarioInterface
     {
-        $this->steps[] = new ActStep($actions);
+        $this->stages[] = new ActStage($actions);
 
         return $this;
     }
 
     public function arrange(ArrangementInterface ...$arrangements): ScenarioInterface
     {
-        $this->steps[] = new ArrangeStep($arrangements);
+        $this->stages[] = new ArrangeStage($arrangements);
 
         return $this;
     }
 
     public function assert(AssertionInterface ...$assertions): ScenarioInterface
     {
-        $this->steps[] = new AssertStep($assertions);
+        $this->stages[] = new AssertStage($assertions);
 
         return $this;
     }
@@ -69,15 +69,15 @@ class Scenario implements ScenarioInterface
         return $this->description;
     }
 
-    public function getSteps(): array
+    public function getStages(): array
     {
-        return $this->steps;
+        return $this->stages;
     }
 
     public function perform(): void
     {
-        foreach ($this->steps as $step) {
-            $step->perform($this->environment);
+        foreach ($this->stages as $stage) {
+            $stage->perform($this->environment);
         }
     }
 }

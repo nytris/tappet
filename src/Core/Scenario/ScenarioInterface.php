@@ -13,16 +13,16 @@ declare(strict_types=1);
 
 namespace Tappet\Core\Scenario;
 
-use Tappet\Core\Step\StepInterface;
+use Tappet\Core\Stage\StageInterface;
 
 interface ScenarioInterface
 {
     public function getDescription(): string;
 
     /**
-     * @return StepInterface[]
+     * @return StageInterface[]
      */
-    public function getSteps(): array;
+    public function getStages(): array;
 
     public function perform(): void;
 }

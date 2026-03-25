@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Tappet\Core\Step;
 
-use Tappet\Core\Environment\EnvironmentInterface;
-
+/**
+ * Represents a single step in an Arrange, Act, or Assert stage.
+ */
 interface StepInterface
 {
-    public function perform(EnvironmentInterface $environment): void;
 }

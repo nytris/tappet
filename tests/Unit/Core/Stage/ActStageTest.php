@@ -11,20 +11,20 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Tests\Unit\Core\Step;
+namespace Tappet\Tests\Unit\Core\Stage;
 
 use Mockery\MockInterface;
 use Tappet\Core\Action\ActionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
-use Tappet\Core\Step\ActStep;
+use Tappet\Core\Stage\ActStage;
 use Tappet\Tests\AbstractTestCase;
 
 /**
- * Class ActStepTest.
+ * Class ActStageTest.
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-class ActStepTest extends AbstractTestCase
+class ActStageTest extends AbstractTestCase
 {
     private EnvironmentInterface&MockInterface $environment;
 
@@ -39,16 +39,16 @@ class ActStepTest extends AbstractTestCase
     {
         $action1 = mock(ActionInterface::class);
         $action2 = mock(ActionInterface::class);
-        $step = new ActStep([$action1, $action2]);
+        $stage = new ActStage([$action1, $action2]);
 
-        static::assertSame([$action1, $action2], $step->getActions());
+        static::assertSame([$action1, $action2], $stage->getActions());
     }
 
     public function testGetActionsReturnsEmptyArrayWhenNoneProvided(): void
     {
-        $step = new ActStep([]);
+        $stage = new ActStage([]);
 
-        static::assertSame([], $step->getActions());
+        static::assertSame([], $stage->getActions());
     }
 
     public function testPerformPerformsEachActionInSequence(): void
@@ -63,17 +63,17 @@ class ActStepTest extends AbstractTestCase
             ->perform($this->environment)
             ->once()
             ->globally()->ordered();
-        $step = new ActStep([$action1, $action2]);
+        $stage = new ActStage([$action1, $action2]);
 
-        $step->perform($this->environment);
+        $stage->perform($this->environment);
     }
 
     public function testPerformDoesNothingWhenNoActions(): void
     {
-        $step = new ActStep([]);
+        $stage = new ActStage([]);
 
         $this->expectNotToPerformAssertions();
 
-        $step->perform($this->environment);
+        $stage->perform($this->environment);
     }
 }

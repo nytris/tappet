@@ -19,9 +19,9 @@ use Tappet\Core\Arrangement\ArrangementInterface;
 use Tappet\Core\Assertion\AssertionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
 use Tappet\Core\Scenario\Scenario;
-use Tappet\Core\Step\ActStep;
-use Tappet\Core\Step\ArrangeStep;
-use Tappet\Core\Step\AssertStep;
+use Tappet\Core\Stage\ActStage;
+use Tappet\Core\Stage\ArrangeStage;
+use Tappet\Core\Stage\AssertStage;
 use Tappet\Tests\AbstractTestCase;
 
 /**
@@ -43,14 +43,14 @@ class ScenarioTest extends AbstractTestCase
         $this->scenario = new Scenario($this->environment, 'my scenario description');
     }
 
-    public function testActAddsAnActStep(): void
+    public function testActAddsAnActStage(): void
     {
         $action = mock(ActionInterface::class);
 
         $this->scenario->act($action);
 
-        static::assertCount(1, $this->scenario->getSteps());
-        static::assertInstanceOf(ActStep::class, $this->scenario->getSteps()[0]);
+        static::assertCount(1, $this->scenario->getStages());
+        static::assertInstanceOf(ActStage::class, $this->scenario->getStages()[0]);
     }
 
     public function testActReturnsSelfForFluentInterface(): void
@@ -62,14 +62,14 @@ class ScenarioTest extends AbstractTestCase
         static::assertSame($this->scenario, $result);
     }
 
-    public function testArrangeAddsAnArrangeStep(): void
+    public function testArrangeAddsAnArrangeStage(): void
     {
         $arrangement = mock(ArrangementInterface::class);
 
         $this->scenario->arrange($arrangement);
 
-        static::assertCount(1, $this->scenario->getSteps());
-        static::assertInstanceOf(ArrangeStep::class, $this->scenario->getSteps()[0]);
+        static::assertCount(1, $this->scenario->getStages());
+        static::assertInstanceOf(ArrangeStage::class, $this->scenario->getStages()[0]);
     }
 
     public function testArrangeReturnsSelfForFluentInterface(): void
@@ -81,14 +81,14 @@ class ScenarioTest extends AbstractTestCase
         static::assertSame($this->scenario, $result);
     }
 
-    public function testAssertAddsAnAssertStep(): void
+    public function testAssertAddsAnAssertStage(): void
     {
         $assertion = mock(AssertionInterface::class);
 
         $this->scenario->assert($assertion);
 
-        static::assertCount(1, $this->scenario->getSteps());
-        static::assertInstanceOf(AssertStep::class, $this->scenario->getSteps()[0]);
+        static::assertCount(1, $this->scenario->getStages());
+        static::assertInstanceOf(AssertStage::class, $this->scenario->getStages()[0]);
     }
 
     public function testAssertReturnsSelfForFluentInterface(): void
@@ -105,12 +105,12 @@ class ScenarioTest extends AbstractTestCase
         static::assertSame('my scenario description', $this->scenario->getDescription());
     }
 
-    public function testGetStepsReturnsEmptyArrayInitially(): void
+    public function testGetStagesReturnsEmptyArrayInitially(): void
     {
-        static::assertSame([], $this->scenario->getSteps());
+        static::assertSame([], $this->scenario->getStages());
     }
 
-    public function testGetStepsReturnsAllAddedStepsInOrder(): void
+    public function testGetStagesReturnsAllAddedStagesInOrder(): void
     {
         $arrangement = mock(ArrangementInterface::class);
         $action = mock(ActionInterface::class);
@@ -120,14 +120,14 @@ class ScenarioTest extends AbstractTestCase
         $this->scenario->act($action);
         $this->scenario->assert($assertion);
 
-        $steps = $this->scenario->getSteps();
-        static::assertCount(3, $steps);
-        static::assertInstanceOf(ArrangeStep::class, $steps[0]);
-        static::assertInstanceOf(ActStep::class, $steps[1]);
-        static::assertInstanceOf(AssertStep::class, $steps[2]);
+        $stages = $this->scenario->getStages();
+        static::assertCount(3, $stages);
+        static::assertInstanceOf(ArrangeStage::class, $stages[0]);
+        static::assertInstanceOf(ActStage::class, $stages[1]);
+        static::assertInstanceOf(AssertStage::class, $stages[2]);
     }
 
-    public function testPerformPerformsAllStepsWithEnvironment(): void
+    public function testPerformPerformsAllStagesWithEnvironment(): void
     {
         $arrangement = mock(ArrangementInterface::class);
         $action = mock(ActionInterface::class);

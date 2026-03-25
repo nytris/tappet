@@ -11,8 +11,8 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Step;
+namespace Tappet\Core\Stage;
 
-abstract class AbstractStep implements StepInterface
+abstract class AbstractStage implements StageInterface
 {
 }

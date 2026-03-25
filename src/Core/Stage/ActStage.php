@@ -11,12 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Step;
+namespace Tappet\Core\Stage;
 
 use Tappet\Core\Action\ActionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
 
-class ActStep extends AbstractStep
+class ActStage extends AbstractStage
 {
     /**
      * @var ActionInterface[]
@@ -43,6 +43,9 @@ class ActStep extends AbstractStep
     {
         foreach ($this->getActions() as $action) {
             $action->perform($environment);
+
+            // FIXME: Assert that the current URL matches the currently expected one,
+            //        which needs to be explicitly given by the OpenPage arrangement or ExpectNewPage assertion.
         }
     }
 }

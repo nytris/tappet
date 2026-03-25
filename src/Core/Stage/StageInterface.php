@@ -11,12 +11,11 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Assertion;
+namespace Tappet\Core\Stage;
 
 use Tappet\Core\Environment\EnvironmentInterface;
-use Tappet\Core\Step\StepInterface;
 
-interface AssertionInterface extends StepInterface
+interface StageInterface
 {
     public function perform(EnvironmentInterface $environment): void;
 }

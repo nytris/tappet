@@ -11,20 +11,20 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Tests\Unit\Core\Step;
+namespace Tappet\Tests\Unit\Core\Stage;
 
 use Mockery\MockInterface;
 use Tappet\Core\Arrangement\ArrangementInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
-use Tappet\Core\Step\ArrangeStep;
+use Tappet\Core\Stage\ArrangeStage;
 use Tappet\Tests\AbstractTestCase;
 
 /**
- * Class ArrangeStepTest.
+ * Class ArrangeStageTest.
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-class ArrangeStepTest extends AbstractTestCase
+class ArrangeStageTest extends AbstractTestCase
 {
     private EnvironmentInterface&MockInterface $environment;
 
@@ -39,16 +39,16 @@ class ArrangeStepTest extends AbstractTestCase
     {
         $arrangement1 = mock(ArrangementInterface::class);
         $arrangement2 = mock(ArrangementInterface::class);
-        $step = new ArrangeStep([$arrangement1, $arrangement2]);
+        $stage = new ArrangeStage([$arrangement1, $arrangement2]);
 
-        static::assertSame([$arrangement1, $arrangement2], $step->getArrangements());
+        static::assertSame([$arrangement1, $arrangement2], $stage->getArrangements());
     }
 
     public function testGetArrangementsReturnsEmptyArrayWhenNoneProvided(): void
     {
-        $step = new ArrangeStep([]);
+        $stage = new ArrangeStage([]);
 
-        static::assertSame([], $step->getArrangements());
+        static::assertSame([], $stage->getArrangements());
     }
 
     public function testPerformPerformsEachArrangementInSequence(): void
@@ -63,17 +63,17 @@ class ArrangeStepTest extends AbstractTestCase
             ->perform($this->environment)
             ->once()
             ->globally()->ordered();
-        $step = new ArrangeStep([$arrangement1, $arrangement2]);
+        $stage = new ArrangeStage([$arrangement1, $arrangement2]);
 
-        $step->perform($this->environment);
+        $stage->perform($this->environment);
     }
 
     public function testPerformDoesNothingWhenNoArrangements(): void
     {
-        $step = new ArrangeStep([]);
+        $stage = new ArrangeStage([]);
 
         $this->expectNotToPerformAssertions();
 
-        $step->perform($this->environment);
+        $stage->perform($this->environment);
     }
 }

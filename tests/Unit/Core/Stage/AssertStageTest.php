@@ -11,20 +11,20 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Tests\Unit\Core\Step;
+namespace Tappet\Tests\Unit\Core\Stage;
 
 use Mockery\MockInterface;
 use Tappet\Core\Assertion\AssertionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
-use Tappet\Core\Step\AssertStep;
+use Tappet\Core\Stage\AssertStage;
 use Tappet\Tests\AbstractTestCase;
 
 /**
- * Class AssertStepTest.
+ * Class AssertStageTest.
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-class AssertStepTest extends AbstractTestCase
+class AssertStageTest extends AbstractTestCase
 {
     private EnvironmentInterface&MockInterface $environment;
 
@@ -39,16 +39,16 @@ class AssertStepTest extends AbstractTestCase
     {
         $assertion1 = mock(AssertionInterface::class);
         $assertion2 = mock(AssertionInterface::class);
-        $step = new AssertStep([$assertion1, $assertion2]);
+        $stage = new AssertStage([$assertion1, $assertion2]);
 
-        static::assertSame([$assertion1, $assertion2], $step->getAssertions());
+        static::assertSame([$assertion1, $assertion2], $stage->getAssertions());
     }
 
     public function testGetAssertionsReturnsEmptyArrayWhenNoneProvided(): void
     {
-        $step = new AssertStep([]);
+        $stage = new AssertStage([]);
 
-        static::assertSame([], $step->getAssertions());
+        static::assertSame([], $stage->getAssertions());
     }
 
     public function testPerformPerformsEachAssertionInSequence(): void
@@ -63,17 +63,17 @@ class AssertStepTest extends AbstractTestCase
             ->perform($this->environment)
             ->once()
             ->globally()->ordered();
-        $step = new AssertStep([$assertion1, $assertion2]);
+        $stage = new AssertStage([$assertion1, $assertion2]);
 
-        $step->perform($this->environment);
+        $stage->perform($this->environment);
     }
 
     public function testPerformDoesNothingWhenNoAssertions(): void
     {
-        $step = new AssertStep([]);
+        $stage = new AssertStage([]);
 
         $this->expectNotToPerformAssertions();
 
-        $step->perform($this->environment);
+        $stage->perform($this->environment);
     }
 }

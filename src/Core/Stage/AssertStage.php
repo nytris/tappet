@@ -11,12 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Step;
+namespace Tappet\Core\Stage;
 
 use Tappet\Core\Assertion\AssertionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
 
-class AssertStep extends AbstractStep
+class AssertStage extends AbstractStage
 {
     /**
      * @var AssertionInterface[]
@@ -43,6 +43,9 @@ class AssertStep extends AbstractStep
     {
         foreach ($this->getAssertions() as $assertion) {
             $assertion->perform($environment);
+
+            // FIXME: Assert that the current URL matches the currently expected one,
+            //        which needs to be explicitly given by the OpenPage arrangement or ExpectNewPage assertion.
         }
     }
 }

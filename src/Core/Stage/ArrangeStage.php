@@ -11,12 +11,12 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Step;
+namespace Tappet\Core\Stage;
 
 use Tappet\Core\Arrangement\ArrangementInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
 
-class ArrangeStep extends AbstractStep
+class ArrangeStage extends AbstractStage
 {
     /**
      * @var ArrangementInterface[]
@@ -43,6 +43,9 @@ class ArrangeStep extends AbstractStep
     {
         foreach ($this->getArrangements() as $arrangement) {
             $arrangement->perform($environment);
+
+            // FIXME: Assert that the current URL matches the currently expected one,
+            //        which needs to be explicitly given by the OpenPage arrangement or ExpectNewPage assertion.
         }
     }
 }
