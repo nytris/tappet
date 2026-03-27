@@ -11,18 +11,18 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Environment\Field;
+namespace Tappet\Core\Environment\Interaction;
 
 use Tappet\Core\Automation\AutomationInterface;
 
 /**
- * Class Field.
+ * Class Interaction.
  *
- * Represents a field on the page, such as a text input or dropdown.
+ * Represents an interaction with the page, such as clicking a specific button.
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-class Field implements FieldInterface
+class Interaction implements InteractionInterface
 {
     /**
      * @var AutomationInterface
@@ -44,8 +44,8 @@ class Field implements FieldInterface
         return $this->handle;
     }
 
-    public function type(string $text): void
+    public function perform(): void
     {
-        $this->automation->typeField($this->handle, $text);
+        $this->automation->performInteraction($this->handle);
     }
 }

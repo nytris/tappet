@@ -16,6 +16,10 @@ namespace Tappet\Core\Environment;
 use Tappet\Core\Automation\AutomationInterface;
 use Tappet\Core\Environment\Field\Field;
 use Tappet\Core\Environment\Field\FieldInterface;
+use Tappet\Core\Environment\Interaction\Interaction;
+use Tappet\Core\Environment\Interaction\InteractionInterface;
+use Tappet\Core\Environment\Region\Region;
+use Tappet\Core\Environment\Region\RegionInterface;
 use Tappet\Core\Fixture\FixtureInterface;
 use Tappet\Core\Fixture\ModelInterface;
 use Tappet\Core\Fixture\ModelRepositoryInterface;
@@ -50,6 +54,16 @@ class Environment implements EnvironmentInterface
     public function getFixtureModel(string $modelClass, string $handle): ModelInterface
     {
         return $this->modelRepository->getFixtureModel($modelClass, $handle);
+    }
+
+    public function getInteraction(string $handle): InteractionInterface
+    {
+        return new Interaction($this->automation, $handle);
+    }
+
+    public function getRegion(string $handle): RegionInterface
+    {
+        return new Region($this->automation, $handle);
     }
 
     /**

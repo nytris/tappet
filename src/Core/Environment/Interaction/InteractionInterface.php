@@ -11,18 +11,18 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Environment\Field;
+namespace Tappet\Core\Environment\Interaction;
 
 /**
- * Interface FieldInterface.
+ * Interface InteractionInterface.
  *
- * Represents a field on the page, such as a text input or dropdown.
+ * Represents an interaction with the page, such as clicking a specific button.
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-interface FieldInterface
+interface InteractionInterface
 {
     public function getHandle(): string;
 
-    public function type(string $text): void;
+    public function perform(): void;
 }

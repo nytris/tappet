@@ -13,10 +13,19 @@ declare(strict_types=1);
 
 namespace Tappet\Core\Scenario;
 
+use Tappet\Core\Action\ActionInterface;
+use Tappet\Core\Arrangement\ArrangementInterface;
+use Tappet\Core\Assertion\AssertionInterface;
 use Tappet\Core\Stage\StageInterface;
 
 interface ScenarioInterface
 {
+    public function act(ActionInterface ...$actions): ScenarioInterface;
+
+    public function arrange(ArrangementInterface ...$arrangements): ScenarioInterface;
+
+    public function assert(AssertionInterface ...$assertions): ScenarioInterface;
+
     public function getDescription(): string;
 
     /**

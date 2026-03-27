@@ -11,18 +11,18 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Environment\Field;
+namespace Tappet\Core\Environment\Region;
 
 use Tappet\Core\Automation\AutomationInterface;
 
 /**
- * Class Field.
+ * Class Region.
  *
- * Represents a field on the page, such as a text input or dropdown.
+ * Represents a region on the page, such as a DOM element that contains a message displayed to the user.
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-class Field implements FieldInterface
+class Region implements RegionInterface
 {
     /**
      * @var AutomationInterface
@@ -39,13 +39,18 @@ class Field implements FieldInterface
         $this->handle = $handle;
     }
 
+    public function assertContains(string $text): void
+    {
+        $this->automation->assertRegionContains($this->handle, $text);
+    }
+
+    public function assertDoesNotContain(string $text): void
+    {
+        $this->automation->assertRegionDoesNotContain($this->handle, $text);
+    }
+
     public function getHandle(): string
     {
         return $this->handle;
-    }
-
-    public function type(string $text): void
-    {
-        $this->automation->typeField($this->handle, $text);
     }
 }

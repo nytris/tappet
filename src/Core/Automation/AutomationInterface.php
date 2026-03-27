@@ -17,6 +17,12 @@ interface AutomationInterface
 {
     public function assertPage(string $url): void;
 
+    public function assertRegionContains(string $handle, string $text): void;
+
+    public function assertRegionDoesNotContain(string $handle, string $text): void;
+
+    public function performInteraction(string $handle): void;
+
     public function typeField(string $fieldHandle, string $text): void;
 
     public function visitPage(string $url): void;

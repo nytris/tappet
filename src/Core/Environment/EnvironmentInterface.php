@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Tappet\Core\Environment;
 
 use Tappet\Core\Environment\Field\FieldInterface;
+use Tappet\Core\Environment\Interaction\InteractionInterface;
+use Tappet\Core\Environment\Region\RegionInterface;
 use Tappet\Core\Fixture\FixtureInterface;
 use Tappet\Core\Fixture\ModelInterface;
 use Tappet\Core\Fixture\ModelProviderInterface;
@@ -23,6 +25,10 @@ interface EnvironmentInterface extends ModelProviderInterface
     public function assertPage(string $url): void;
 
     public function getField(string $handle): FieldInterface;
+
+    public function getInteraction(string $handle): InteractionInterface;
+
+    public function getRegion(string $handle): RegionInterface;
 
     /**
      * @param FixtureInterface<ModelInterface> $fixture
