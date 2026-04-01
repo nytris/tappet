@@ -11,18 +11,15 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Environment\Interaction;
+namespace Tappet\Core\Action;
 
 /**
  * Interface InteractionInterface.
  *
- * Represents an interaction with the page, such as clicking a specific button.
+ * Represents an action that performs an interaction with the page.
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-interface InteractionInterface
+interface InteractionInterface extends ActionInterface
 {
-    public function getHandle(): string;
-
-    public function perform(): void;
 }

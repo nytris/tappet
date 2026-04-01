@@ -11,11 +11,15 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Page;
+namespace Tappet\Core\Assertion;
 
-use Tappet\Core\Environment\EnvironmentInterface;
-
-interface PageInterface
+/**
+ * Interface StateAssertionInterface.
+ *
+ * Represents an assertion performed of a state expected on the page.
+ *
+ * @author Dan Phillimore <dan@ovms.co>
+ */
+interface StateAssertionInterface extends AssertionInterface
 {
-    public function buildUrl(EnvironmentInterface $environment): string;
 }

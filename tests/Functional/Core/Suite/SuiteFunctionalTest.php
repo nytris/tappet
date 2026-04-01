@@ -44,7 +44,7 @@ class SuiteFunctionalTest extends AbstractFunctionalTestCase
         $this->automation = new TestAutomation();
 
         $modelRepository = new ModelRepository(new \stdClass());
-        $environment = new Environment($modelRepository, $this->automation);
+        $environment = new Environment($modelRepository, $this->automation, 'https://example.com');
 
         Tappet::initialise(
             function (SuiteInterface $suite): void {
@@ -93,61 +93,65 @@ class SuiteFunctionalTest extends AbstractFunctionalTestCase
 
     public function testSuiteScenarioCanTypeIntoAField(): void
     {
+        $typeAction = new Type('username-field', 'janedoe');
+
         Tappet::describe('my suite', [
             Tappet::it('fills in the username field')
-                ->act(new Type('username-field', 'janedoe')),
+                ->act($typeAction),
         ]);
 
         $this->capturedSuite->getScenarios()[0]->perform();
 
-        static::assertSame(
-            [['type' => 'typeField', 'fieldHandle' => 'username-field', 'text' => 'janedoe']],
-            $this->automation->operations
-        );
+        static::assertCount(1, $this->automation->operations);
+        static::assertSame('performFieldAction', $this->automation->operations[0]['type']);
+        static::assertSame($typeAction, $this->automation->operations[0]['action']);
     }
 
     public function testSuiteScenarioCanPerformAnInteraction(): void
     {
+        $action = new PerformInteraction('submit-button');
+
         Tappet::describe('my suite', [
             Tappet::it('presses the submit button')
-                ->act(new PerformInteraction('submit-button')),
+                ->act($action),
         ]);
 
         $this->capturedSuite->getScenarios()[0]->perform();
 
-        static::assertSame(
-            [['type' => 'performInteraction', 'handle' => 'submit-button']],
-            $this->automation->operations
-        );
+        static::assertCount(1, $this->automation->operations);
+        static::assertSame('performInteraction', $this->automation->operations[0]['type']);
+        static::assertSame($action, $this->automation->operations[0]['action']);
     }
 
     public function testSuiteScenarioCanAssertRegionContains(): void
     {
+        $assertion = new ExpectRegionContains('flash-message', 'Saved successfully.');
+
         Tappet::describe('my suite', [
             Tappet::it('sees the flash message')
-                ->assert(new ExpectRegionContains('flash-message', 'Saved successfully.')),
+                ->assert($assertion),
         ]);
 
         $this->capturedSuite->getScenarios()[0]->perform();
 
-        static::assertSame(
-            [['type' => 'assertRegionContains', 'handle' => 'flash-message', 'text' => 'Saved successfully.']],
-            $this->automation->operations
-        );
+        static::assertCount(1, $this->automation->operations);
+        static::assertSame('performRegionAssertion', $this->automation->operations[0]['type']);
+        static::assertSame($assertion, $this->automation->operations[0]['assertion']);
     }
 
     public function testSuiteScenarioCanAssertRegionDoesNotContain(): void
     {
+        $assertion = new ExpectRegionDoesNotContain('flash-message', 'Something went wrong.');
+
         Tappet::describe('my suite', [
             Tappet::it('does not see an error in the flash message')
-                ->assert(new ExpectRegionDoesNotContain('flash-message', 'Something went wrong.')),
+                ->assert($assertion),
         ]);
 
         $this->capturedSuite->getScenarios()[0]->perform();
 
-        static::assertSame(
-            [['type' => 'assertRegionDoesNotContain', 'handle' => 'flash-message', 'text' => 'Something went wrong.']],
-            $this->automation->operations
-        );
+        static::assertCount(1, $this->automation->operations);
+        static::assertSame('performRegionAssertion', $this->automation->operations[0]['type']);
+        static::assertSame($assertion, $this->automation->operations[0]['assertion']);
     }
 }

@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Tappet\Core\Standard\Action;
 
-use Tappet\Core\Action\ActionInterface;
+use Tappet\Core\Action\InteractionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
 
-class PerformInteraction implements ActionInterface
+class PerformInteraction implements InteractionInterface
 {
     /**
      * @var string
@@ -35,6 +35,6 @@ class PerformInteraction implements ActionInterface
 
     public function perform(EnvironmentInterface $environment): void
     {
-        $environment->getInteraction($this->interactionHandle)->perform();
+        $environment->performInteraction($this);
     }
 }

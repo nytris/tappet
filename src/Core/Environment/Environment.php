@@ -13,17 +13,22 @@ declare(strict_types=1);
 
 namespace Tappet\Core\Environment;
 
+use Tappet\Core\Action\FieldActionInterface;
+use Tappet\Core\Action\InteractionInterface;
+use Tappet\Core\Assertion\RegionAssertionInterface;
+use Tappet\Core\Assertion\StateAssertionInterface;
 use Tappet\Core\Automation\AutomationInterface;
-use Tappet\Core\Environment\Field\Field;
-use Tappet\Core\Environment\Field\FieldInterface;
-use Tappet\Core\Environment\Interaction\Interaction;
-use Tappet\Core\Environment\Interaction\InteractionInterface;
-use Tappet\Core\Environment\Region\Region;
-use Tappet\Core\Environment\Region\RegionInterface;
 use Tappet\Core\Fixture\FixtureInterface;
 use Tappet\Core\Fixture\ModelInterface;
 use Tappet\Core\Fixture\ModelRepositoryInterface;
 
+/**
+ * Class Environment.
+ *
+ * Represents the test environment provided to test components.
+ *
+ * @author Dan Phillimore <dan@ovms.co>
+ */
 class Environment implements EnvironmentInterface
 {
     /**
@@ -31,49 +36,107 @@ class Environment implements EnvironmentInterface
      */
     private $automation;
     /**
+     * @var string
+     */
+    private $baseUrl;
+    /**
      * @var ModelRepositoryInterface
      */
     private $modelRepository;
 
-    public function __construct(ModelRepositoryInterface $modelRepository, AutomationInterface $automation)
-    {
+    public function __construct(
+        ModelRepositoryInterface $modelRepository,
+        AutomationInterface $automation,
+        string $baseUrl
+    ) {
         $this->automation = $automation;
+        $this->baseUrl = $baseUrl;
         $this->modelRepository = $modelRepository;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function assertPage(string $url): void
     {
-        $this->automation->assertPage($url);
+        $this->automation->assertPage($url, $this);
     }
 
-    public function getField(string $handle): FieldInterface
+    /**
+     * @inheritDoc
+     */
+    public function getAutomation(): AutomationInterface
     {
-        return new Field($this->automation, $handle);
+        return $this->automation;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getBaseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getFixtureModel(string $modelClass, string $handle): ModelInterface
     {
         return $this->modelRepository->getFixtureModel($modelClass, $handle);
     }
 
-    public function getInteraction(string $handle): InteractionInterface
-    {
-        return new Interaction($this->automation, $handle);
-    }
-
-    public function getRegion(string $handle): RegionInterface
-    {
-        return new Region($this->automation, $handle);
-    }
-
     /**
-     * @param FixtureInterface<ModelInterface> $fixture
+     * @inheritDoc
      */
     public function loadFixture(string $handle, FixtureInterface $fixture): void
     {
         $this->modelRepository->loadFixture($handle, $fixture);
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function loadMultipleFixtures(array $fixtures): void
+    {
+        $this->modelRepository->loadMultipleFixtures($fixtures);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function performFieldAction(FieldActionInterface $action): void
+    {
+        $this->automation->performFieldAction($action);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function performInteraction(InteractionInterface $interaction): void
+    {
+        $this->automation->performInteraction($interaction);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function performRegionAssertion(RegionAssertionInterface $assertion): void
+    {
+        $this->automation->performRegionAssertion($assertion);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function performStateAssertion(StateAssertionInterface $assertion): void
+    {
+        $this->automation->performStateAssertion($assertion);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function visitPage(string $url): void
     {
         $this->automation->visitPage($url);

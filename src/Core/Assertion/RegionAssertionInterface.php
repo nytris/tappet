@@ -11,18 +11,15 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Environment\Field;
+namespace Tappet\Core\Assertion;
 
 /**
- * Interface FieldInterface.
+ * Interface RegionAssertionInterface.
  *
- * Represents a field on the page, such as a text input or dropdown.
+ * Represents an assertion performed on a region of the page.
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-interface FieldInterface
+interface RegionAssertionInterface extends AssertionInterface
 {
-    public function getHandle(): string;
-
-    public function type(string $text): void;
 }

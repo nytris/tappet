@@ -11,37 +11,37 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Standard\Assertion;
+namespace Tappet\Core\Standard\Action;
 
+use Tappet\Core\Action\ActionInterface;
 use Tappet\Core\Assertion\AssertionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
-use Tappet\Core\Page\PageInterface;
 
 /**
- * Class ExpectNewPage.
+ * Class AssertionAction.
  *
- * Asserts that the current page URL matches the given page's URL.
+ * Performs an assertion during the act stage of a scenario.
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-class ExpectNewPage implements AssertionInterface
+class AssertionAction implements ActionInterface
 {
     /**
-     * @var PageInterface
+     * @var AssertionInterface
      */
-    private $page;
+    private $assertion;
 
-    public function __construct(PageInterface $page)
+    public function __construct(AssertionInterface $assertion)
     {
-        $this->page = $page;
+        $this->assertion = $assertion;
     }
 
     /**
-     * Fetches the page expected to be loaded.
+     * Fetches the assertion that will be performed.
      */
-    public function getPage(): PageInterface
+    public function getAssertion(): AssertionInterface
     {
-        return $this->page;
+        return $this->assertion;
     }
 
     /**
@@ -49,6 +49,6 @@ class ExpectNewPage implements AssertionInterface
      */
     public function perform(EnvironmentInterface $environment): void
     {
-        $environment->assertPage($this->page->buildUrl($environment));
+        $this->assertion->perform($environment);
     }
 }

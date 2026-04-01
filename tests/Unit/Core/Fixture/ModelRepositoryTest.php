@@ -130,6 +130,78 @@ class ModelRepositoryTest extends AbstractTestCase
         $this->modelRepository->purge();
     }
 
+    public function testLoadMultipleFixturesCallsFixtureApiWithFixtureData(): void
+    {
+        $fixture1 = new ModelRepositoryTestFixture();
+        $fixture2 = new ModelRepositoryTestFixture2();
+        $model1 = new ModelRepositoryTestModel();
+        $model2 = new ModelRepositoryTestModel2();
+
+        $this->fixtureApi->expects()
+            ->loadMultipleFixtures(serialize([
+                'myHandle1' => $fixture1,
+                'myHandle2' => $fixture2,
+            ]))
+            ->once()
+            ->andReturn(serialize(['myHandle1' => $model1, 'myHandle2' => $model2]));
+
+        $this->modelRepository->loadMultipleFixtures([
+            'myHandle1' => $fixture1,
+            'myHandle2' => $fixture2,
+        ]);
+    }
+
+    public function testLoadMultipleFixturesStoresModelsForRetrieval(): void
+    {
+        $fixture1 = new ModelRepositoryTestFixture();
+        $fixture2 = new ModelRepositoryTestFixture2();
+        $model1 = new ModelRepositoryTestModel();
+        $model2 = new ModelRepositoryTestModel2();
+        $this->fixtureApi->allows('loadMultipleFixtures')->andReturn(
+            serialize(['myHandle1' => $model1, 'myHandle2' => $model2])
+        );
+
+        $this->modelRepository->loadMultipleFixtures([
+            'myHandle1' => $fixture1,
+            'myHandle2' => $fixture2,
+        ]);
+
+        static::assertEquals(
+            $model1,
+            $this->modelRepository->getFixtureModel(ModelRepositoryTestModel::class, 'myHandle1')
+        );
+        static::assertEquals(
+            $model2,
+            $this->modelRepository->getFixtureModel(ModelRepositoryTestModel2::class, 'myHandle2')
+        );
+    }
+
+    public function testLoadMultipleFixturesThrowsWhenModelTypeDoesNotMatchFixture(): void
+    {
+        $fixture1 = new ModelRepositoryTestFixture();
+        $fixture2 = new ModelRepositoryTestFixture2();
+        $model1 = new ModelRepositoryTestModel();
+        $wrongModel = new ModelRepositoryTestWrongModel();
+        $this->fixtureApi->allows('loadMultipleFixtures')->andReturn(
+            serialize(['myHandle1' => $model1, 'myHandle2' => $wrongModel])
+        );
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage(
+            sprintf(
+                'Fixture "%s" model of type "%s" returned from API does not match expected type "%s"',
+                ModelRepositoryTestFixture2::class,
+                ModelRepositoryTestWrongModel::class,
+                ModelRepositoryTestModel2::class
+            )
+        );
+
+        $this->modelRepository->loadMultipleFixtures([
+            'myHandle1' => $fixture1,
+            'myHandle2' => $fixture2,
+        ]);
+    }
+
     public function testPurgeClearsModelsFromRepository(): void
     {
         $fixture = new ModelRepositoryTestFixture();

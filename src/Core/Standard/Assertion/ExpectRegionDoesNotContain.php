@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Tappet\Core\Standard\Assertion;
 
-use Tappet\Core\Assertion\AssertionInterface;
+use Tappet\Core\Assertion\RegionAssertionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
 
-class ExpectRegionDoesNotContain implements AssertionInterface
+class ExpectRegionDoesNotContain implements RegionAssertionInterface
 {
     /**
      * @var string
@@ -45,6 +45,6 @@ class ExpectRegionDoesNotContain implements AssertionInterface
 
     public function perform(EnvironmentInterface $environment): void
     {
-        $environment->getRegion($this->regionHandle)->assertDoesNotContain($this->text);
+        $environment->performRegionAssertion($this);
     }
 }

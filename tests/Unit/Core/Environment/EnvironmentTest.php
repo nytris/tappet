@@ -14,9 +14,11 @@ declare(strict_types=1);
 namespace Tappet\Tests\Unit\Core\Environment;
 
 use Mockery\MockInterface;
+use Tappet\Core\Action\FieldActionInterface;
+use Tappet\Core\Action\InteractionInterface;
+use Tappet\Core\Assertion\RegionAssertionInterface;
 use Tappet\Core\Automation\AutomationInterface;
 use Tappet\Core\Environment\Environment;
-use Tappet\Core\Environment\Field\Field;
 use Tappet\Core\Fixture\FixtureInterface;
 use Tappet\Core\Fixture\ModelInterface;
 use Tappet\Core\Fixture\ModelRepositoryInterface;
@@ -40,36 +42,26 @@ class EnvironmentTest extends AbstractTestCase
         $this->automation = mock(AutomationInterface::class);
         $this->modelRepository = mock(ModelRepositoryInterface::class);
 
-        $this->environment = new Environment($this->modelRepository, $this->automation);
+        $this->environment = new Environment($this->modelRepository, $this->automation, 'https://my-app.example.com');
     }
 
     public function testAssertPageDelegatesToAutomation(): void
     {
-        $this->automation->expects()->assertPage('https://example.com/dashboard')
+        $this->automation->expects()
+            ->assertPage('https://example.com/dashboard', $this->environment)
             ->once();
 
         $this->environment->assertPage('https://example.com/dashboard');
     }
 
-    public function testGetFieldReturnsFieldInstance(): void
+    public function testGetAutomationReturnsTheAutomationLayerAbstraction(): void
     {
-        $field = $this->environment->getField('username');
-
-        static::assertInstanceOf(Field::class, $field);
+        static::assertSame($this->automation, $this->environment->getAutomation());
     }
 
-    public function testGetFieldReturnsFieldWithCorrectHandle(): void
+    public function testGetBaseUrlReturnsBaseUrl(): void
     {
-        $field = $this->environment->getField('username');
-
-        static::assertSame('username', $field->getHandle());
-    }
-
-    public function testGetFieldReturnsDifferentFieldForDifferentHandle(): void
-    {
-        $field = $this->environment->getField('password');
-
-        static::assertSame('password', $field->getHandle());
+        static::assertSame('https://my-app.example.com', $this->environment->getBaseUrl());
     }
 
     public function testGetFixtureModelDelegatesToModelRepository(): void
@@ -95,6 +87,52 @@ class EnvironmentTest extends AbstractTestCase
             ->once();
 
         $this->environment->loadFixture('myHandle', $fixture);
+    }
+
+    public function testLoadMultipleFixturesDelegatesToModelRepository(): void
+    {
+        $fixture1 = mock(FixtureInterface::class);
+        $fixture2 = mock(FixtureInterface::class);
+        $fixtures = ['myFirstHandle' => $fixture1, 'mySecondHandle' => $fixture2];
+
+        $this->modelRepository->expects()
+            ->loadMultipleFixtures($fixtures)
+            ->once();
+
+        $this->environment->loadMultipleFixtures($fixtures);
+    }
+
+    public function testPerformFieldActionDelegatesToAutomation(): void
+    {
+        $action = mock(FieldActionInterface::class);
+
+        $this->automation->expects()
+            ->performFieldAction($action)
+            ->once();
+
+        $this->environment->performFieldAction($action);
+    }
+
+    public function testPerformInteractionDelegatesToAutomation(): void
+    {
+        $interaction = mock(InteractionInterface::class);
+
+        $this->automation->expects()
+            ->performInteraction($interaction)
+            ->once();
+
+        $this->environment->performInteraction($interaction);
+    }
+
+    public function testPerformRegionAssertionDelegatesToAutomation(): void
+    {
+        $assertion = mock(RegionAssertionInterface::class);
+
+        $this->automation->expects()
+            ->performRegionAssertion($assertion)
+            ->once();
+
+        $this->environment->performRegionAssertion($assertion);
     }
 
     public function testVisitPageDelegatesToAutomation(): void

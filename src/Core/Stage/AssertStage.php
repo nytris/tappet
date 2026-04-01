@@ -16,6 +16,13 @@ namespace Tappet\Core\Stage;
 use Tappet\Core\Assertion\AssertionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
 
+/**
+ * Class AssertStage.
+ *
+ * Represents the Assertions stage of a scenario.
+ *
+ * @author Dan Phillimore <dan@ovms.co>
+ */
 class AssertStage extends AbstractStage
 {
     /**
@@ -32,6 +39,8 @@ class AssertStage extends AbstractStage
     }
 
     /**
+     * Fetches the assertions to be performed.
+     *
      * @return AssertionInterface[]
      */
     public function getAssertions(): array
@@ -39,13 +48,17 @@ class AssertStage extends AbstractStage
         return $this->assertions;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function perform(EnvironmentInterface $environment): void
     {
         foreach ($this->getAssertions() as $assertion) {
-            $assertion->perform($environment);
-
             // FIXME: Assert that the current URL matches the currently expected one,
             //        which needs to be explicitly given by the OpenPage arrangement or ExpectNewPage assertion.
+            //        To be stored inside the Environment.
+
+            $assertion->perform($environment);
         }
     }
 }

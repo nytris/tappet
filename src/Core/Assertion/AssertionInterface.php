@@ -16,7 +16,17 @@ namespace Tappet\Core\Assertion;
 use Tappet\Core\Environment\EnvironmentInterface;
 use Tappet\Core\Step\StepInterface;
 
+/**
+ * Interface AssertionInterface.
+ *
+ * Represents an assertion that can be performed during a scenario.
+ *
+ * @author Dan Phillimore <dan@ovms.co>
+ */
 interface AssertionInterface extends StepInterface
 {
+    /**
+     * Performs the assertion.
+     */
     public function perform(EnvironmentInterface $environment): void;
 }

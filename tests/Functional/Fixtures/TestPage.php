@@ -33,9 +33,4 @@ class TestPage implements PageInterface
     {
         return $this->url;
     }
-
-    public function matchesUrl(string $url): bool
-    {
-        return $url === $this->url;
-    }
 }

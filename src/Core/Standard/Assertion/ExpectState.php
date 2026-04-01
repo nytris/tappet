@@ -13,35 +13,34 @@ declare(strict_types=1);
 
 namespace Tappet\Core\Standard\Assertion;
 
-use Tappet\Core\Assertion\AssertionInterface;
+use Tappet\Core\Assertion\StateAssertionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
-use Tappet\Core\Page\PageInterface;
 
 /**
- * Class ExpectNewPage.
+ * Class ExpectState.
  *
- * Asserts that the current page URL matches the given page's URL.
+ * Asserts that the given state is present on the page.
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-class ExpectNewPage implements AssertionInterface
+class ExpectState implements StateAssertionInterface
 {
     /**
-     * @var PageInterface
+     * @var string
      */
-    private $page;
+    private $stateHandle;
 
-    public function __construct(PageInterface $page)
+    public function __construct(string $stateHandle)
     {
-        $this->page = $page;
+        $this->stateHandle = $stateHandle;
     }
 
     /**
-     * Fetches the page expected to be loaded.
+     * Fetches the handle of the state to be asserted.
      */
-    public function getPage(): PageInterface
+    public function getStateHandle(): string
     {
-        return $this->page;
+        return $this->stateHandle;
     }
 
     /**
@@ -49,6 +48,6 @@ class ExpectNewPage implements AssertionInterface
      */
     public function perform(EnvironmentInterface $environment): void
     {
-        $environment->assertPage($this->page->buildUrl($environment));
+        $environment->performStateAssertion($this);
     }
 }

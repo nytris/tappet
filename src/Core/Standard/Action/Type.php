@@ -13,10 +13,17 @@ declare(strict_types=1);
 
 namespace Tappet\Core\Standard\Action;
 
-use Tappet\Core\Action\ActionInterface;
+use Tappet\Core\Action\FieldActionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
 
-class Type implements ActionInterface
+/**
+ * Class Type.
+ *
+ * Types text into a field.
+ *
+ * @author Dan Phillimore <dan@ovms.co>
+ */
+class Type implements FieldActionInterface
 {
     /**
      * @var string
@@ -47,6 +54,6 @@ class Type implements ActionInterface
 
     public function perform(EnvironmentInterface $environment): void
     {
-        $environment->getField($this->fieldHandle)->type($this->text);
+        $environment->performFieldAction($this);
     }
 }

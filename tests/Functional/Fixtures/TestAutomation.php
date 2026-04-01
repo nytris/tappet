@@ -13,7 +13,12 @@ declare(strict_types=1);
 
 namespace Tappet\Tests\Functional\Fixtures;
 
+use Tappet\Core\Action\FieldActionInterface;
+use Tappet\Core\Action\InteractionInterface;
+use Tappet\Core\Assertion\RegionAssertionInterface;
+use Tappet\Core\Assertion\StateAssertionInterface;
 use Tappet\Core\Automation\AutomationInterface;
+use Tappet\Core\Environment\EnvironmentInterface;
 
 /**
  * Class TestAutomation.
@@ -26,33 +31,33 @@ use Tappet\Core\Automation\AutomationInterface;
 class TestAutomation implements AutomationInterface
 {
     /**
-     * @var array<array{type: string, ...}>
+     * @var array<array<string, mixed>>
      */
     public array $operations = [];
 
-    public function assertPage(string $url): void
+    public function assertPage(string $url, EnvironmentInterface $environment): void
     {
         $this->operations[] = ['type' => 'assertPage', 'url' => $url];
     }
 
-    public function assertRegionContains(string $handle, string $text): void
+    public function performFieldAction(FieldActionInterface $action): void
     {
-        $this->operations[] = ['type' => 'assertRegionContains', 'handle' => $handle, 'text' => $text];
+        $this->operations[] = ['type' => 'performFieldAction', 'action' => $action];
     }
 
-    public function assertRegionDoesNotContain(string $handle, string $text): void
+    public function performInteraction(InteractionInterface $interaction): void
     {
-        $this->operations[] = ['type' => 'assertRegionDoesNotContain', 'handle' => $handle, 'text' => $text];
+        $this->operations[] = ['type' => 'performInteraction', 'action' => $interaction];
     }
 
-    public function performInteraction(string $handle): void
+    public function performRegionAssertion(RegionAssertionInterface $assertion): void
     {
-        $this->operations[] = ['type' => 'performInteraction', 'handle' => $handle];
+        $this->operations[] = ['type' => 'performRegionAssertion', 'assertion' => $assertion];
     }
 
-    public function typeField(string $fieldHandle, string $text): void
+    public function performStateAssertion(StateAssertionInterface $assertion): void
     {
-        $this->operations[] = ['type' => 'typeField', 'fieldHandle' => $fieldHandle, 'text' => $text];
+        $this->operations[] = ['type' => 'performStateAssertion', 'assertion' => $assertion];
     }
 
     public function visitPage(string $url): void

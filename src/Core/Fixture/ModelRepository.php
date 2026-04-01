@@ -17,6 +17,11 @@ use RuntimeException;
 
 /**
  * Class ModelRepository.
+ *
+ * Loads fixtures via the Fixture API, storing the corresponding models
+ * that represent their loaded state.
+ *
+ * @author Dan Phillimore <dan@ovms.co>
  */
 class ModelRepository implements ModelRepositoryInterface
 {
@@ -34,6 +39,9 @@ class ModelRepository implements ModelRepositoryInterface
         $this->fixtureApi = $fixtureApi;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getFixtureModel(string $modelClass, string $handle): ModelInterface
     {
         if (!isset($this->fixtureModels[$modelClass][$handle])) {
@@ -48,7 +56,7 @@ class ModelRepository implements ModelRepositoryInterface
     }
 
     /**
-     * @param FixtureInterface<ModelInterface> $fixture
+     * @inheritDoc
      */
     public function loadFixture(string $handle, FixtureInterface $fixture): void
     {
@@ -71,6 +79,36 @@ class ModelRepository implements ModelRepositoryInterface
         ];
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function loadMultipleFixtures(array $fixtures): void
+    {
+        $response = $this->fixtureApi->loadMultipleFixtures(serialize($fixtures));
+        $models = unserialize($response);
+
+        foreach ($fixtures as $handle => $fixture) {
+            $model = $models[$handle];
+
+            if (!($model instanceof ($fixture::getModelClass()))) {
+                throw new RuntimeException(sprintf(
+                    'Fixture "%s" model of type "%s" returned from API does not match expected type "%s"',
+                    $fixture::class,
+                    $model::class,
+                    $fixture::getModelClass()
+                ));
+            }
+
+            $this->fixtureModels[$fixture::getModelClass()][$handle] = [
+                'fixture' => $fixture,
+                'model' => $model,
+            ];
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function purge(): void
     {
         if (empty($this->fixtureModels)) {
@@ -82,7 +120,10 @@ class ModelRepository implements ModelRepositoryInterface
         foreach ($this->fixtureModels as $models) {
             foreach ($models as $data) {
                 // Models should be purged in reverse order of loading due to likely dependencies between them.
-                array_unshift($modelsToPurge, ['fixture' => serialize($data['fixture']), 'model' => serialize($data['model'])]);
+                array_unshift($modelsToPurge, [
+                    'fixture' => serialize($data['fixture']),
+                    'model' => serialize($data['model'])
+                ]);
             }
         }
 

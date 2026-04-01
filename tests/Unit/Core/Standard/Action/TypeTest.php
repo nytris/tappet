@@ -15,7 +15,6 @@ namespace Tappet\Tests\Unit\Core\Standard\Action;
 
 use Mockery\MockInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
-use Tappet\Core\Environment\Field\FieldInterface;
 use Tappet\Core\Standard\Action\Type;
 use Tappet\Tests\AbstractTestCase;
 
@@ -48,15 +47,10 @@ class TypeTest extends AbstractTestCase
         static::assertSame('hello world', $this->action->getText());
     }
 
-    public function testPerformGetsFieldAndTypesText(): void
+    public function testPerformDelegatesToEnvironmentPerformFieldAction(): void
     {
-        $field = mock(FieldInterface::class);
         $this->environment->expects()
-            ->getField('username')
-            ->once()
-            ->andReturn($field);
-        $field->expects()
-            ->type('hello world')
+            ->performFieldAction($this->action)
             ->once();
 
         $this->action->perform($this->environment);
