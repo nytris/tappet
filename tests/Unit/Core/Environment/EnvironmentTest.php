@@ -17,6 +17,7 @@ use Mockery\MockInterface;
 use Tappet\Core\Action\FieldActionInterface;
 use Tappet\Core\Action\InteractionInterface;
 use Tappet\Core\Assertion\RegionAssertionInterface;
+use Tappet\Core\Assertion\StateAssertionInterface;
 use Tappet\Core\Automation\AutomationInterface;
 use Tappet\Core\Environment\Environment;
 use Tappet\Core\Fixture\FixtureInterface;
@@ -133,6 +134,17 @@ class EnvironmentTest extends AbstractTestCase
             ->once();
 
         $this->environment->performRegionAssertion($assertion);
+    }
+
+    public function testPerformStateAssertionDelegatesToAutomation(): void
+    {
+        $assertion = mock(StateAssertionInterface::class);
+
+        $this->automation->expects()
+            ->performStateAssertion($assertion)
+            ->once();
+
+        $this->environment->performStateAssertion($assertion);
     }
 
     public function testVisitPageDelegatesToAutomation(): void

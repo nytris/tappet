@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Core\Automation\Interaction;
 
 use Tappet\Core\Action\InteractionInterface;
+use Tappet\Core\Automation\AutomationInterface;
 
 /**
  * Interface InteractionHandlerInterface.
@@ -31,7 +32,7 @@ interface InteractionHandlerInterface
      * and each value is a callable that accepts an instance of that class and performs
      * the corresponding interaction.
      *
-     * @return array<class-string<InteractionInterface>, callable(InteractionInterface): void>
+     * @return array<class-string<InteractionInterface>, callable(InteractionInterface, AutomationInterface): void>
      */
     public function getHandlers(): array;
 }

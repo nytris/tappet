@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Core\Automation\Field;
 
 use Tappet\Core\Action\FieldActionInterface;
+use Tappet\Core\Automation\AutomationInterface;
 
 /**
  * Interface FieldActionHandlerInterface.
@@ -31,7 +32,7 @@ interface FieldActionHandlerInterface
      * and each value is a callable that accepts an instance of that class and performs
      * the corresponding field action.
      *
-     * @return array<class-string<FieldActionInterface>, callable(FieldActionInterface): void>
+     * @return array<class-string<FieldActionInterface>, callable(FieldActionInterface, AutomationInterface): void>
      */
     public function getHandlers(): array;
 }

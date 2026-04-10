@@ -11,11 +11,21 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Suite;
+namespace Tappet\Core\Module;
 
 use Tappet\Core\Scenario\ScenarioInterface;
 
-class Suite implements SuiteInterface
+/**
+ * Class Module.
+ *
+ * Represents a module of scenarios.
+ *
+ * Sometimes referred to as a "suite" in other testing frameworks,
+ * but in Tappet "suite" refers to the entire test project.
+ *
+ * @author Dan Phillimore <dan@ovms.co>
+ */
+class Module implements ModuleInterface
 {
     /**
      * @var string
@@ -35,11 +45,17 @@ class Suite implements SuiteInterface
         $this->scenarios = $scenarios;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getDescription(): string
     {
         return $this->description;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getScenarios(): array
     {
         return $this->scenarios;

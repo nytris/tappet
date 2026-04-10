@@ -16,6 +16,13 @@ namespace Tappet\Core\Standard\Assertion;
 use Tappet\Core\Assertion\RegionAssertionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
 
+/**
+ * Class ExpectRegionDoesNotContain.
+ *
+ * Asserts that the given text is not found in the given region.
+ *
+ * @author Dan Phillimore <dan@ovms.co>
+ */
 class ExpectRegionDoesNotContain implements RegionAssertionInterface
 {
     /**
@@ -33,16 +40,25 @@ class ExpectRegionDoesNotContain implements RegionAssertionInterface
         $this->text = $text;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getRegionHandle(): string
     {
         return $this->regionHandle;
     }
 
+    /**
+     * Fetches the text expected not to be found in the region.
+     */
     public function getText(): string
     {
         return $this->text;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function perform(EnvironmentInterface $environment): void
     {
         $environment->performRegionAssertion($this);

@@ -22,4 +22,8 @@ namespace Tappet\Core\Action;
  */
 interface InteractionInterface extends ActionInterface
 {
+    /**
+     * Fetches the unique handle of the interaction to be performed.
+     */
+    public function getInteractionHandle(): string;
 }

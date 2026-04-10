@@ -15,6 +15,7 @@ namespace Tappet\Core\Automation\Interaction;
 
 use InvalidArgumentException;
 use Tappet\Core\Action\InteractionInterface;
+use Tappet\Core\Automation\AutomationInterface;
 
 /**
  * Class InteractionRegistry.
@@ -33,8 +34,11 @@ class InteractionRegistry implements InteractionRegistryInterface
     /**
      * @inheritDoc
      */
-    public function handleInteraction(string $interactionType, InteractionInterface $interaction): void
-    {
+    public function handleInteraction(
+        string $interactionType,
+        InteractionInterface $interaction,
+        AutomationInterface $automation
+    ): void {
         if (!array_key_exists($interactionType, $this->handlers)) {
             throw new InvalidArgumentException(
                 sprintf('No interaction handler registered for interaction type "%s".', $interactionType)
@@ -54,7 +58,7 @@ class InteractionRegistry implements InteractionRegistryInterface
             );
         }
 
-        ($interactionHandlers[$interactionClass])($interaction);
+        ($interactionHandlers[$interactionClass])($interaction, $automation);
     }
 
     /**

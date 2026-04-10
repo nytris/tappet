@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Core\Automation\Region;
 
 use Tappet\Core\Assertion\RegionAssertionInterface;
+use Tappet\Core\Automation\AutomationInterface;
 
 /**
  * Interface RegionAssertionHandlerInterface.
@@ -31,7 +32,7 @@ interface RegionAssertionHandlerInterface
      * and each value is a callable that accepts an instance of that class and performs
      * the corresponding region assertion.
      *
-     * @return array<class-string<RegionAssertionInterface>, callable(RegionAssertionInterface): void>
+     * @return array<class-string<RegionAssertionInterface>, callable(RegionAssertionInterface, AutomationInterface): void>
      */
     public function getHandlers(): array;
 }

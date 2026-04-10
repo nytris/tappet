@@ -11,15 +11,30 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Core\Suite;
+namespace Tappet\Core\Module;
 
 use Tappet\Core\Scenario\ScenarioInterface;
 
-interface SuiteInterface
+/**
+ * Interface ModuleInterface.
+ *
+ * Represents a module of scenarios.
+ *
+ * Sometimes referred to as a "suite" in other testing frameworks,
+ * but in Tappet "suite" refers to the entire test project.
+ *
+ * @author Dan Phillimore <dan@ovms.co>
+ */
+interface ModuleInterface
 {
+    /**
+     * Fetches the description of the module.
+     */
     public function getDescription(): string;
 
     /**
+     * Fetches the scenarios in the module.
+     *
      * @return ScenarioInterface[]
      */
     public function getScenarios(): array;

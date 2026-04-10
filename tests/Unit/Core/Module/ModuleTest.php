@@ -11,31 +11,31 @@
 
 declare(strict_types=1);
 
-namespace Tappet\Tests\Unit\Core\Suite;
+namespace Tappet\Tests\Unit\Core\Module;
 
+use Tappet\Core\Module\Module;
 use Tappet\Core\Scenario\ScenarioInterface;
-use Tappet\Core\Suite\Suite;
 use Tappet\Tests\AbstractTestCase;
 
 /**
- * Class SuiteTest.
+ * Class ModuleTest.
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-class SuiteTest extends AbstractTestCase
+class ModuleTest extends AbstractTestCase
 {
     public function testGetDescriptionReturnsDescription(): void
     {
-        $suite = new Suite('my suite description', []);
+        $module = new Module('my module description', []);
 
-        static::assertSame('my suite description', $suite->getDescription());
+        static::assertSame('my module description', $module->getDescription());
     }
 
     public function testGetScenariosReturnsEmptyArrayWhenNoneProvided(): void
     {
-        $suite = new Suite('my suite', []);
+        $module = new Module('my module', []);
 
-        static::assertSame([], $suite->getScenarios());
+        static::assertSame([], $module->getScenarios());
     }
 
     public function testGetScenariosReturnsProvidedScenarios(): void
@@ -43,8 +43,8 @@ class SuiteTest extends AbstractTestCase
         $scenario1 = mock(ScenarioInterface::class);
         $scenario2 = mock(ScenarioInterface::class);
 
-        $suite = new Suite('my suite', [$scenario1, $scenario2]);
+        $module = new Module('my module', [$scenario1, $scenario2]);
 
-        static::assertSame([$scenario1, $scenario2], $suite->getScenarios());
+        static::assertSame([$scenario1, $scenario2], $module->getScenarios());
     }
 }

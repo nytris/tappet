@@ -13,18 +13,18 @@ declare(strict_types=1);
 
 namespace Tappet\Core;
 
-use RuntimeException;
 use Tappet\Core\Environment\EnvironmentInterface;
+use Tappet\Core\Exception\LogicException;
+use Tappet\Core\Module\Module;
 use Tappet\Core\Scenario\Scenario;
 use Tappet\Core\Scenario\ScenarioInterface;
-use Tappet\Core\Suite\Suite;
 
 class Tappet
 {
     /**
      * @var callable|null
      */
-    private static $describeSuite;
+    private static $describeModule;
     /**
      * @var EnvironmentInterface|null
      */
@@ -35,11 +35,11 @@ class Tappet
      */
     public static function describe(string $name, array $scenarios): void
     {
-        if (!self::$describeSuite) {
-            throw new RuntimeException('Nytris Tappet ::describe() :: No describer set');
+        if (!self::$describeModule) {
+            throw new LogicException('Nytris Tappet ::describe() :: No describer set');
         }
 
-        (self::$describeSuite)(new Suite($name, $scenarios));
+        (self::$describeModule)(new Module($name, $scenarios));
     }
 
     public static function it(string $name): ScenarioInterface
@@ -48,16 +48,16 @@ class Tappet
     }
 
     public static function initialise(
-        callable $describeSuite,
+        callable $describeModule,
         EnvironmentInterface $environment
     ): void {
-        self::$describeSuite = $describeSuite;
+        self::$describeModule = $describeModule;
         self::$environment = $environment;
     }
 
     public static function uninitialise(): void
     {
-        self::$describeSuite = null;
+        self::$describeModule = null;
         self::$environment = null;
     }
 }

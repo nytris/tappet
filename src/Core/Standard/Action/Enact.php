@@ -16,7 +16,14 @@ namespace Tappet\Core\Standard\Action;
 use Tappet\Core\Action\InteractionInterface;
 use Tappet\Core\Environment\EnvironmentInterface;
 
-class PerformInteraction implements InteractionInterface
+/**
+ * Class Enact.
+ *
+ * Performs an interaction with the page, such as clicking a button.
+ *
+ * @author Dan Phillimore <dan@ovms.co>
+ */
+class Enact implements InteractionInterface
 {
     /**
      * @var string
@@ -28,11 +35,17 @@ class PerformInteraction implements InteractionInterface
         $this->interactionHandle = $interactionHandle;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getInteractionHandle(): string
     {
         return $this->interactionHandle;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function perform(EnvironmentInterface $environment): void
     {
         $environment->performInteraction($this);

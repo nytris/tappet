@@ -22,4 +22,8 @@ namespace Tappet\Core\Assertion;
  */
 interface RegionAssertionInterface extends AssertionInterface
 {
+    /**
+     * Fetches the unique handle of the region on which the assertion will be performed.
+     */
+    public function getRegionHandle(): string;
 }

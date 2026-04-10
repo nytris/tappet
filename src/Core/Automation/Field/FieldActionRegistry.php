@@ -15,6 +15,7 @@ namespace Tappet\Core\Automation\Field;
 
 use InvalidArgumentException;
 use Tappet\Core\Action\FieldActionInterface;
+use Tappet\Core\Automation\AutomationInterface;
 
 /**
  * Class FieldActionRegistry.
@@ -33,8 +34,11 @@ class FieldActionRegistry implements FieldActionRegistryInterface
     /**
      * @inheritDoc
      */
-    public function handleFieldAction(string $fieldType, FieldActionInterface $action): void
-    {
+    public function handleFieldAction(
+        string $fieldType,
+        FieldActionInterface $action,
+        AutomationInterface $automation
+    ): void {
         if (!array_key_exists($fieldType, $this->handlers)) {
             throw new InvalidArgumentException(
                 sprintf('No field action handler registered for field type "%s".', $fieldType)
@@ -54,7 +58,7 @@ class FieldActionRegistry implements FieldActionRegistryInterface
             );
         }
 
-        ($actionHandlers[$actionClass])($action);
+        ($actionHandlers[$actionClass])($action, $automation);
     }
 
     /**

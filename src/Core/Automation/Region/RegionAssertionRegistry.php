@@ -15,6 +15,7 @@ namespace Tappet\Core\Automation\Region;
 
 use InvalidArgumentException;
 use Tappet\Core\Assertion\RegionAssertionInterface;
+use Tappet\Core\Automation\AutomationInterface;
 
 /**
  * Class RegionAssertionRegistry.
@@ -33,8 +34,11 @@ class RegionAssertionRegistry implements RegionAssertionRegistryInterface
     /**
      * @inheritDoc
      */
-    public function handleRegionAssertion(string $regionType, RegionAssertionInterface $assertion): void
-    {
+    public function handleRegionAssertion(
+        string $regionType,
+        RegionAssertionInterface $assertion,
+        AutomationInterface $automation
+    ): void {
         if (!array_key_exists($regionType, $this->handlers)) {
             throw new InvalidArgumentException(
                 sprintf('No region assertion handler registered for region type "%s".', $regionType)
@@ -54,7 +58,7 @@ class RegionAssertionRegistry implements RegionAssertionRegistryInterface
             );
         }
 
-        ($assertionHandlers[$assertionClass])($assertion);
+        ($assertionHandlers[$assertionClass])($assertion, $automation);
     }
 
     /**

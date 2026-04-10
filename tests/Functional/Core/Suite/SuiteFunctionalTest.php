@@ -15,17 +15,24 @@ namespace Tappet\Tests\Functional\Core\Suite;
 
 use Tappet\Core\Environment\Environment;
 use Tappet\Core\Fixture\ModelRepository;
-use Tappet\Core\Standard\Action\PerformInteraction;
+use Tappet\Core\Module\ModuleInterface;
+use Tappet\Core\Standard\Action\AssertionAction;
+use Tappet\Core\Standard\Action\Enact;
 use Tappet\Core\Standard\Action\Type;
+use Tappet\Core\Standard\Arrangement\LoadFixture;
+use Tappet\Core\Standard\Arrangement\LoadMultipleFixtures;
 use Tappet\Core\Standard\Arrangement\OpenPage;
 use Tappet\Core\Standard\Assertion\ExpectNewPage;
 use Tappet\Core\Standard\Assertion\ExpectRegionContains;
 use Tappet\Core\Standard\Assertion\ExpectRegionDoesNotContain;
-use Tappet\Tests\Functional\Fixtures\TestPage;
-use Tappet\Core\Suite\SuiteInterface;
+use Tappet\Core\Standard\Assertion\ExpectState;
 use Tappet\Core\Tappet;
 use Tappet\Tests\Functional\AbstractFunctionalTestCase;
 use Tappet\Tests\Functional\Fixtures\TestAutomation;
+use Tappet\Tests\Functional\Fixtures\TestFixture;
+use Tappet\Tests\Functional\Fixtures\TestFixtureApi;
+use Tappet\Tests\Functional\Fixtures\TestModel;
+use Tappet\Tests\Functional\Fixtures\TestPage;
 
 /**
  * Class SuiteFunctionalTest.
@@ -35,7 +42,7 @@ use Tappet\Tests\Functional\Fixtures\TestAutomation;
 class SuiteFunctionalTest extends AbstractFunctionalTestCase
 {
     private TestAutomation $automation;
-    private SuiteInterface|null $capturedSuite = null;
+    private ModuleInterface|null $capturedModule = null;
 
     public function setUp(): void
     {
@@ -47,8 +54,8 @@ class SuiteFunctionalTest extends AbstractFunctionalTestCase
         $environment = new Environment($modelRepository, $this->automation, 'https://example.com');
 
         Tappet::initialise(
-            function (SuiteInterface $suite): void {
-                $this->capturedSuite = $suite;
+            function (ModuleInterface $module): void {
+                $this->capturedModule = $module;
             },
             $environment
         );
@@ -63,12 +70,12 @@ class SuiteFunctionalTest extends AbstractFunctionalTestCase
 
     public function testSuiteScenarioCanOpenPage(): void
     {
-        Tappet::describe('my suite', [
+        Tappet::describe('my module', [
             Tappet::it('visits the login page')
                 ->arrange(new OpenPage(new TestPage('https://example.com/login'))),
         ]);
 
-        $this->capturedSuite->getScenarios()[0]->perform();
+        $this->capturedModule->getScenarios()[0]->perform();
 
         static::assertSame(
             [['type' => 'visitPage', 'url' => 'https://example.com/login']],
@@ -78,12 +85,12 @@ class SuiteFunctionalTest extends AbstractFunctionalTestCase
 
     public function testSuiteScenarioCanAssertNewPage(): void
     {
-        Tappet::describe('my suite', [
+        Tappet::describe('my module', [
             Tappet::it('lands on the home page')
                 ->assert(new ExpectNewPage(new TestPage('https://example.com/home'))),
         ]);
 
-        $this->capturedSuite->getScenarios()[0]->perform();
+        $this->capturedModule->getScenarios()[0]->perform();
 
         static::assertSame(
             [['type' => 'assertPage', 'url' => 'https://example.com/home']],
@@ -95,12 +102,12 @@ class SuiteFunctionalTest extends AbstractFunctionalTestCase
     {
         $typeAction = new Type('username-field', 'janedoe');
 
-        Tappet::describe('my suite', [
+        Tappet::describe('my module', [
             Tappet::it('fills in the username field')
                 ->act($typeAction),
         ]);
 
-        $this->capturedSuite->getScenarios()[0]->perform();
+        $this->capturedModule->getScenarios()[0]->perform();
 
         static::assertCount(1, $this->automation->operations);
         static::assertSame('performFieldAction', $this->automation->operations[0]['type']);
@@ -109,14 +116,14 @@ class SuiteFunctionalTest extends AbstractFunctionalTestCase
 
     public function testSuiteScenarioCanPerformAnInteraction(): void
     {
-        $action = new PerformInteraction('submit-button');
+        $action = new Enact('submit-button');
 
-        Tappet::describe('my suite', [
+        Tappet::describe('my module', [
             Tappet::it('presses the submit button')
                 ->act($action),
         ]);
 
-        $this->capturedSuite->getScenarios()[0]->perform();
+        $this->capturedModule->getScenarios()[0]->perform();
 
         static::assertCount(1, $this->automation->operations);
         static::assertSame('performInteraction', $this->automation->operations[0]['type']);
@@ -127,12 +134,12 @@ class SuiteFunctionalTest extends AbstractFunctionalTestCase
     {
         $assertion = new ExpectRegionContains('flash-message', 'Saved successfully.');
 
-        Tappet::describe('my suite', [
+        Tappet::describe('my module', [
             Tappet::it('sees the flash message')
                 ->assert($assertion),
         ]);
 
-        $this->capturedSuite->getScenarios()[0]->perform();
+        $this->capturedModule->getScenarios()[0]->perform();
 
         static::assertCount(1, $this->automation->operations);
         static::assertSame('performRegionAssertion', $this->automation->operations[0]['type']);
@@ -143,15 +150,107 @@ class SuiteFunctionalTest extends AbstractFunctionalTestCase
     {
         $assertion = new ExpectRegionDoesNotContain('flash-message', 'Something went wrong.');
 
-        Tappet::describe('my suite', [
+        Tappet::describe('my module', [
             Tappet::it('does not see an error in the flash message')
                 ->assert($assertion),
         ]);
 
-        $this->capturedSuite->getScenarios()[0]->perform();
+        $this->capturedModule->getScenarios()[0]->perform();
 
         static::assertCount(1, $this->automation->operations);
         static::assertSame('performRegionAssertion', $this->automation->operations[0]['type']);
         static::assertSame($assertion, $this->automation->operations[0]['assertion']);
+    }
+
+    public function testSuiteScenarioCanAssertState(): void
+    {
+        $assertion = new ExpectState('modal-open');
+
+        Tappet::describe('my module', [
+            Tappet::it('sees the modal is open')
+                ->assert($assertion),
+        ]);
+
+        $this->capturedModule->getScenarios()[0]->perform();
+
+        static::assertCount(1, $this->automation->operations);
+        static::assertSame('performStateAssertion', $this->automation->operations[0]['type']);
+        static::assertSame($assertion, $this->automation->operations[0]['assertion']);
+    }
+
+    public function testSuiteScenarioCanPerformAssertionDuringActStage(): void
+    {
+        $assertion = new ExpectState('form-submitted');
+        $action = new AssertionAction($assertion);
+
+        Tappet::describe('my module', [
+            Tappet::it('checks state during the act stage')
+                ->act($action),
+        ]);
+
+        $this->capturedModule->getScenarios()[0]->perform();
+
+        static::assertCount(1, $this->automation->operations);
+        static::assertSame('performStateAssertion', $this->automation->operations[0]['type']);
+        static::assertSame($assertion, $this->automation->operations[0]['assertion']);
+    }
+
+    public function testSuiteScenarioCanLoadFixture(): void
+    {
+        $fixtureApi = new TestFixtureApi();
+        $modelRepository = new ModelRepository($fixtureApi);
+        $environment = new Environment($modelRepository, $this->automation, 'https://example.com');
+        Tappet::uninitialise();
+        Tappet::initialise(
+            function (ModuleInterface $module): void {
+                $this->capturedModule = $module;
+            },
+            $environment
+        );
+
+        $fixture = new TestFixture(21);
+
+        Tappet::describe('my module', [
+            Tappet::it('loads a fixture')
+                ->arrange(new LoadFixture('myHandle', $fixture)),
+        ]);
+
+        $this->capturedModule->getScenarios()[0]->perform();
+
+        $model = $modelRepository->getFixtureModel(TestModel::class, 'myHandle');
+        static::assertInstanceOf(TestModel::class, $model);
+        static::assertSame(serialize($fixture), $model->serialisedFixture);
+    }
+
+    public function testSuiteScenarioCanLoadMultipleFixtures(): void
+    {
+        $fixtureApi = new TestFixtureApi();
+        $modelRepository = new ModelRepository($fixtureApi);
+        $environment = new Environment($modelRepository, $this->automation, 'https://example.com');
+        Tappet::uninitialise();
+        Tappet::initialise(
+            function (ModuleInterface $module): void {
+                $this->capturedModule = $module;
+            },
+            $environment
+        );
+
+        $firstFixture = new TestFixture(21);
+        $secondFixture = new TestFixture(42);
+
+        Tappet::describe('my module', [
+            Tappet::it('loads multiple fixtures')
+                ->arrange(new LoadMultipleFixtures([
+                    'firstHandle' => $firstFixture,
+                    'secondHandle' => $secondFixture,
+                ])),
+        ]);
+
+        $this->capturedModule->getScenarios()[0]->perform();
+
+        static::assertInstanceOf(TestModel::class, $modelRepository->getFixtureModel(TestModel::class, 'firstHandle'));
+        static::assertSame(serialize($firstFixture), $modelRepository->getFixtureModel(TestModel::class, 'firstHandle')->serialisedFixture);
+        static::assertInstanceOf(TestModel::class, $modelRepository->getFixtureModel(TestModel::class, 'secondHandle'));
+        static::assertSame(serialize($secondFixture), $modelRepository->getFixtureModel(TestModel::class, 'secondHandle')->serialisedFixture);
     }
 }

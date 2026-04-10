@@ -14,11 +14,11 @@ declare(strict_types=1);
 namespace Tappet\Tests\Unit\Core;
 
 use Mockery\MockInterface;
-use RuntimeException;
 use Tappet\Core\Environment\EnvironmentInterface;
+use Tappet\Core\Exception\LogicException;
+use Tappet\Core\Module\Module;
+use Tappet\Core\Module\ModuleInterface;
 use Tappet\Core\Scenario\Scenario;
-use Tappet\Core\Suite\Suite;
-use Tappet\Core\Suite\SuiteInterface;
 use Tappet\Core\Tappet;
 use Tappet\Tests\AbstractTestCase;
 
@@ -49,47 +49,47 @@ class TappetTest extends AbstractTestCase
 
     public function testDescribeThrowsWhenNoDescriberSet(): void
     {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('No describer set');
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Nytris Tappet ::describe() :: No describer set');
 
-        Tappet::describe('my suite', []);
+        Tappet::describe('my module', []);
     }
 
-    public function testDescribeCallsDescriberWithNewSuite(): void
+    public function testDescribeCallsDescriberWithNewModule(): void
     {
-        $capturedSuite = null;
-        Tappet::initialise(function (SuiteInterface $suite) use (&$capturedSuite) {
-            $capturedSuite = $suite;
+        $capturedModule = null;
+        Tappet::initialise(function (ModuleInterface $module) use (&$capturedModule) {
+            $capturedModule = $module;
         }, $this->environment);
 
-        Tappet::describe('my suite', []);
+        Tappet::describe('my module', []);
 
-        static::assertInstanceOf(Suite::class, $capturedSuite);
+        static::assertInstanceOf(Module::class, $capturedModule);
     }
 
-    public function testDescribePassesCorrectDescriptionToSuite(): void
+    public function testDescribePassesCorrectDescriptionToModule(): void
     {
-        $capturedSuite = null;
-        Tappet::initialise(function (SuiteInterface $suite) use (&$capturedSuite) {
-            $capturedSuite = $suite;
+        $capturedModule = null;
+        Tappet::initialise(function (ModuleInterface $module) use (&$capturedModule) {
+            $capturedModule = $module;
         }, $this->environment);
 
-        Tappet::describe('my suite', []);
+        Tappet::describe('my module', []);
 
-        static::assertSame('my suite', $capturedSuite->getDescription());
+        static::assertSame('my module', $capturedModule->getDescription());
     }
 
-    public function testDescribePassesScenariosToSuite(): void
+    public function testDescribePassesScenariosToModule(): void
     {
-        $capturedSuite = null;
+        $capturedModule = null;
         $scenario = new Scenario($this->environment, 'my scenario');
-        Tappet::initialise(function (SuiteInterface $suite) use (&$capturedSuite) {
-            $capturedSuite = $suite;
+        Tappet::initialise(function (ModuleInterface $module) use (&$capturedModule) {
+            $capturedModule = $module;
         }, $this->environment);
 
-        Tappet::describe('my suite', [$scenario]);
+        Tappet::describe('my module', [$scenario]);
 
-        static::assertSame([$scenario], $capturedSuite->getScenarios());
+        static::assertSame([$scenario], $capturedModule->getScenarios());
     }
 
     public function testItReturnsScenarioInstance(): void
@@ -108,5 +108,16 @@ class TappetTest extends AbstractTestCase
         $scenario = Tappet::it('my scenario');
 
         static::assertSame('my scenario', $scenario->getDescription());
+    }
+
+    public function testUninitialiseResetsDescriberSoSubsequentDescribeThrows(): void
+    {
+        Tappet::initialise(fn () => null, $this->environment);
+        Tappet::uninitialise();
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Nytris Tappet ::describe() :: No describer set');
+
+        Tappet::describe('my module', []);
     }
 }

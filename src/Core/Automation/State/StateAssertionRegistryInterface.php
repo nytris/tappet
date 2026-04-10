@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Core\Automation\State;
 
 use Tappet\Core\Assertion\StateAssertionInterface;
+use Tappet\Core\Automation\AutomationInterface;
 
 /**
  * Interface StateAssertionRegistryInterface.
@@ -27,7 +28,11 @@ interface StateAssertionRegistryInterface
     /**
      * Dispatches the given state assertion to the handler registered for the given state type.
      */
-    public function handleStateAssertion(string $stateType, StateAssertionInterface $assertion): void;
+    public function handleStateAssertion(
+        string $stateType,
+        StateAssertionInterface $assertion,
+        AutomationInterface $automation
+    ): void;
 
     /**
      * Registers a handler for the given state type.

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Core\Automation\State;
 
 use Tappet\Core\Assertion\StateAssertionInterface;
+use Tappet\Core\Automation\AutomationInterface;
 
 /**
  * Interface StateAssertionHandlerInterface.
@@ -31,7 +32,7 @@ interface StateAssertionHandlerInterface
      * and each value is a callable that accepts an instance of that class and performs
      * the corresponding state assertion.
      *
-     * @return array<class-string<StateAssertionInterface>, callable(StateAssertionInterface): void>
+     * @return array<class-string<StateAssertionInterface>, callable(StateAssertionInterface, AutomationInterface): void>
      */
     public function getHandlers(): array;
 }

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Core\Automation\Interaction;
 
 use Tappet\Core\Action\InteractionInterface;
+use Tappet\Core\Automation\AutomationInterface;
 
 /**
  * Interface InteractionRegistryInterface.
@@ -27,7 +28,11 @@ interface InteractionRegistryInterface
     /**
      * Dispatches the given interaction to the handler registered for the given interaction type.
      */
-    public function handleInteraction(string $interactionType, InteractionInterface $interaction): void;
+    public function handleInteraction(
+        string $interactionType,
+        InteractionInterface $interaction,
+        AutomationInterface $automation
+    ): void;
 
     /**
      * Registers a handler for the given interaction type.

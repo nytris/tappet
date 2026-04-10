@@ -22,4 +22,8 @@ namespace Tappet\Core\Assertion;
  */
 interface StateAssertionInterface extends AssertionInterface
 {
+    /**
+     * Fetches the unique handle of the state to be asserted.
+     */
+    public function getStateHandle(): string;
 }
