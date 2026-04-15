@@ -27,6 +27,26 @@ use Tappet\Core\Exception\MissingConfigurationException;
 interface ConfigInterface
 {
     /**
+     * Fetches the default API base URL for Tappet, or null if none is configured.
+     */
+    public function getDefaultApiBaseUrl(): ?string;
+
+    /**
+     * Fetches the default API key for Tappet, or null if none is configured.
+     */
+    public function getDefaultApiKey(): ?string;
+
+    /**
+     * Fetches the default GUI application base URL for Tappet, or null if none is configured.
+     */
+    public function getDefaultBaseUrl(): ?string;
+
+    /**
+     * Fetches the default test filter pattern for Tappet, or null if none is configured.
+     */
+    public function getDefaultFilter(): ?string;
+
+    /**
      * Fetches the default suite name for Tappet, or null if none is configured.
      */
     public function getDefaultSuite(): ?string;
@@ -40,6 +60,34 @@ interface ConfigInterface
      * Returns true when a `tappet.config.php` was successfully loaded, false when absent.
      */
     public function isPresent(): bool;
+
+    /**
+     * Sets the default API base URL for Tappet.
+     *
+     * @throws MissingConfigurationException When called on a missing config.
+     */
+    public function setDefaultApiBaseUrl(string $apiBaseUrl): self;
+
+    /**
+     * Sets the default API key for Tappet.
+     *
+     * @throws MissingConfigurationException When called on a missing config.
+     */
+    public function setDefaultApiKey(string $apiKey): self;
+
+    /**
+     * Sets the default GUI application base URL for Tappet.
+     *
+     * @throws MissingConfigurationException When called on a missing config.
+     */
+    public function setDefaultBaseUrl(string $baseUrl): self;
+
+    /**
+     * Sets the default test filter pattern for Tappet.
+     *
+     * @throws MissingConfigurationException When called on a missing config.
+     */
+    public function setDefaultFilter(string $filter): self;
 
     /**
      * Sets the default suite name for Tappet.

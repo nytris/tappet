@@ -47,7 +47,11 @@ class RunCommandTest extends AbstractTestCase
         parent::setUp();
 
         $this->config = mock(ConfigInterface::class, [
-            'isPresent' => true
+            'getDefaultApiBaseUrl' => null,
+            'getDefaultApiKey' => null,
+            'getDefaultBaseUrl' => null,
+            'getDefaultFilter' => null,
+            'isPresent' => true,
         ]);
         $this->environment = mock(EnvironmentInterface::class, [
             'getEnvironmentVariable' => null,
@@ -86,6 +90,8 @@ class RunCommandTest extends AbstractTestCase
             Global options:
               --api-base-url <url>    Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).
               --api-key <key>         Tappet API key (or TAPPET_API_KEY env var).
+              --base-url <url>        Base URL of the GUI application under test (or TAPPET_BASE_URL env var).
+              --filter <pattern>      Filter tests by name pattern.
 
             EXPECTED,
             $this->stderr->getOutput()
@@ -123,6 +129,8 @@ class RunCommandTest extends AbstractTestCase
             Global options:
               --api-base-url <url>    Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).
               --api-key <key>         Tappet API key (or TAPPET_API_KEY env var).
+              --base-url <url>        Base URL of the GUI application under test (or TAPPET_BASE_URL env var).
+              --filter <pattern>      Filter tests by name pattern.
 
             EXPECTED,
             $this->stderr->getOutput()
@@ -156,6 +164,8 @@ class RunCommandTest extends AbstractTestCase
             Global options:
               --api-base-url <url>    Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).
               --api-key <key>         Tappet API key (or TAPPET_API_KEY env var).
+              --base-url <url>        Base URL of the GUI application under test (or TAPPET_BASE_URL env var).
+              --filter <pattern>      Filter tests by name pattern.
 
             EXPECTED,
             $this->stderr->getOutput()
@@ -215,14 +225,20 @@ class RunCommandTest extends AbstractTestCase
             ->run(
                 '/my/project/root',
                 'my-suite',
+                'https://gui.example.com',
                 'https://api.example.com',
                 'test-key',
-                ['api-base-url' => 'https://api.example.com', 'api-key' => 'test-key']
+                null,
+                []
             )
             ->once()
             ->andReturn($result);
 
-        $runResult = $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com', 'api-key' => 'test-key']);
+        $runResult = $this->runCommand->run('my-suite', [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'test-key',
+        ]);
 
         static::assertSame($result, $runResult);
     }
@@ -238,11 +254,23 @@ class RunCommandTest extends AbstractTestCase
             ->once()
             ->andReturn($suite);
         $suite->expects()
-            ->run('/my/project/root', 'default-suite', 'https://api.example.com', 'test-key', ['api-base-url' => 'https://api.example.com', 'api-key' => 'test-key'])
+            ->run(
+                '/my/project/root',
+                'default-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'test-key',
+                null,
+                []
+            )
             ->once()
             ->andReturn($result);
 
-        $runResult = $this->runCommand->run(null, ['api-base-url' => 'https://api.example.com', 'api-key' => 'test-key']);
+        $runResult = $this->runCommand->run(null, [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'test-key',
+        ]);
 
         static::assertSame($result, $runResult);
     }
@@ -277,7 +305,11 @@ class RunCommandTest extends AbstractTestCase
         ]);
         $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
 
-        $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com', 'api-key' => 'test-key']);
+        $this->runCommand->run('my-suite', [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'test-key',
+        ]);
 
         static::assertSame('My suite output', $this->stdout->getOutput());
     }
@@ -296,14 +328,30 @@ class RunCommandTest extends AbstractTestCase
             ->run(
                 '/my/project/root',
                 'my-suite',
+                'https://gui.example.com',
                 'https://api.example.com',
                 'test-key',
-                ['api-base-url' => 'https://api.example.com', 'api-key' => 'test-key', 'verbose' => true]
+                null,
+                ['verbose' => true]
             )
             ->once()
             ->andReturn($result);
 
-        $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com', 'api-key' => 'test-key', 'verbose' => true]);
+        $this->runCommand->run('my-suite', ['base-url' => 'https://gui.example.com', 'api-base-url' => 'https://api.example.com', 'api-key' => 'test-key', 'verbose' => true]);
+    }
+
+    public function testRunReturnsNullAndWritesErrorWhenNoBaseUrl(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+
+        $result = $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com', 'api-key' => 'test-key']);
+
+        static::assertNull($result);
+        static::assertSame(
+            'Error: no base URL specified. Provide one via --base-url or the TAPPET_BASE_URL environment variable.' . PHP_EOL,
+            $this->stderr->getOutput()
+        );
     }
 
     public function testRunReturnsNullAndWritesErrorWhenNoApiBaseUrl(): void
@@ -311,7 +359,7 @@ class RunCommandTest extends AbstractTestCase
         $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
         $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
 
-        $result = $this->runCommand->run('my-suite', ['api-key' => 'test-key']);
+        $result = $this->runCommand->run('my-suite', ['base-url' => 'https://gui.example.com', 'api-key' => 'test-key']);
 
         static::assertNull($result);
         static::assertSame(
@@ -325,7 +373,7 @@ class RunCommandTest extends AbstractTestCase
         $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
         $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
 
-        $result = $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com']);
+        $result = $this->runCommand->run('my-suite', ['base-url' => 'https://gui.example.com', 'api-base-url' => 'https://api.example.com']);
 
         static::assertNull($result);
         static::assertSame(
@@ -359,14 +407,21 @@ class RunCommandTest extends AbstractTestCase
             ->run(
                 '/my/project/root',
                 'my-suite',
+                'https://gui.example.com',
                 'https://api.example.com',
                 'test-key',
-                ['api-base-url' => 'https://api.example.com', 'api-key' => 'test-key', 'sub-filter' => 'my-test']
+                null,
+                ['sub-filter' => 'my-test']
             )
             ->once()
             ->andReturn($result);
 
-        $runResult = $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com', 'api-key' => 'test-key', 'sub-filter' => 'my-test']);
+        $runResult = $this->runCommand->run('my-suite', [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'test-key',
+            'sub-filter' => 'my-test',
+        ]);
 
         static::assertSame($result, $runResult);
     }
@@ -381,14 +436,20 @@ class RunCommandTest extends AbstractTestCase
             ->run(
                 '/my/project/root',
                 'my-suite',
+                'https://gui.example.com',
                 'https://option.example.com',
                 'my-api-key',
-                ['api-base-url' => 'https://option.example.com', 'api-key' => 'my-api-key']
+                null,
+                []
             )
             ->once()
             ->andReturn($result);
 
-        $this->runCommand->run('my-suite', ['api-base-url' => 'https://option.example.com', 'api-key' => 'my-api-key']);
+        $this->runCommand->run('my-suite', [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://option.example.com',
+            'api-key' => 'my-api-key',
+        ]);
     }
 
     public function testRunResolvesApiBaseUrlFromEnvironmentVariable(): void
@@ -399,14 +460,19 @@ class RunCommandTest extends AbstractTestCase
         $this->environment->allows('getEnvironmentVariable')
             ->with('TAPPET_API_BASE_URL')
             ->andReturn('https://env.example.com');
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_BASE_URL')
+            ->andReturn('https://gui.example.com');
 
         $suite->expects()
             ->run(
                 '/my/project/root',
                 'my-suite',
+                'https://gui.example.com',
                 'https://env.example.com',
                 'my-api-key',
-                ['api-key' => 'my-api-key']
+                null,
+                []
             )
             ->once()
             ->andReturn($result);
@@ -422,14 +488,19 @@ class RunCommandTest extends AbstractTestCase
         $this->environment->allows('getEnvironmentVariable')
             ->with('TAPPET_API_BASE_URL')
             ->andReturn('https://env.example.com');
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_BASE_URL')
+            ->andReturn('https://gui.example.com');
 
         $suite->expects()
             ->run(
                 '/my/project/root',
                 'my-suite',
+                'https://gui.example.com',
                 'https://option.example.com',
                 'my-api-key',
-                ['api-base-url' => 'https://option.example.com', 'api-key' => 'my-api-key']
+                null,
+                []
             )
             ->once()
             ->andReturn($result);
@@ -447,14 +518,20 @@ class RunCommandTest extends AbstractTestCase
             ->run(
                 '/my/project/root',
                 'my-suite',
+                'https://gui.example.com',
                 'https://api.example.com',
                 'my-api-key',
-                ['api-base-url' => 'https://api.example.com', 'api-key' => 'my-api-key']
+                null,
+                []
             )
             ->once()
             ->andReturn($result);
 
-        $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com', 'api-key' => 'my-api-key']);
+        $this->runCommand->run('my-suite', [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'my-api-key',
+        ]);
     }
 
     public function testRunResolvesApiKeyFromEnvironmentVariable(): void
@@ -465,14 +542,19 @@ class RunCommandTest extends AbstractTestCase
         $this->environment->allows('getEnvironmentVariable')
             ->with('TAPPET_API_KEY')
             ->andReturn('env-api-key');
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_BASE_URL')
+            ->andReturn('https://gui.example.com');
 
         $suite->expects()
             ->run(
                 '/my/project/root',
                 'my-suite',
+                'https://gui.example.com',
                 'https://api.example.com',
                 'env-api-key',
-                ['api-base-url' => 'https://api.example.com']
+                null,
+                []
             )
             ->once()
             ->andReturn($result);
@@ -488,18 +570,362 @@ class RunCommandTest extends AbstractTestCase
         $this->environment->allows('getEnvironmentVariable')
             ->with('TAPPET_API_KEY')
             ->andReturn('env-api-key');
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_BASE_URL')
+            ->andReturn('https://gui.example.com');
 
         $suite->expects()
             ->run(
                 '/my/project/root',
                 'my-suite',
+                'https://gui.example.com',
                 'https://api.example.com',
                 'option-api-key',
-                ['api-base-url' => 'https://api.example.com', 'api-key' => 'option-api-key']
+                null,
+                []
             )
             ->once()
             ->andReturn($result);
 
         $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com', 'api-key' => 'option-api-key']);
+    }
+
+    public function testRunResolvesBaseUrlFromOption(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://option-gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', [
+            'base-url' => 'https://option-gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'my-api-key',
+        ]);
+    }
+
+    public function testRunResolvesBaseUrlFromEnvironmentVariable(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_BASE_URL')
+            ->andReturn('https://env-gui.example.com');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://env-gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com', 'api-key' => 'my-api-key']);
+    }
+
+    public function testRunPrefersBaseUrlOptionOverEnvironmentVariable(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_BASE_URL')
+            ->andReturn('https://env-gui.example.com');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://option-gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', [
+            'base-url' => 'https://option-gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'my-api-key',
+        ]);
+    }
+
+    public function testRunPassesFilterToSuite(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                'login',
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'my-api-key',
+            'filter' => 'login',
+        ]);
+    }
+
+    public function testRunPassesNullFilterToSuiteWhenNoFilterOption(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'my-api-key',
+        ]);
+    }
+
+    public function testRunResolvesBaseUrlFromConfigDefault(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->config->allows('getDefaultBaseUrl')->andReturn('https://config-gui.example.com');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://config-gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com', 'api-key' => 'my-api-key']);
+    }
+
+    public function testRunPrefersBaseUrlEnvVarOverConfigDefault(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->config->allows('getDefaultBaseUrl')->andReturn('https://config-gui.example.com');
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_BASE_URL')
+            ->andReturn('https://env-gui.example.com');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://env-gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com', 'api-key' => 'my-api-key']);
+    }
+
+    public function testRunResolvesApiBaseUrlFromConfigDefault(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->config->allows('getDefaultApiBaseUrl')->andReturn('https://config-api.example.com');
+        $this->config->allows('getDefaultBaseUrl')->andReturn('https://gui.example.com');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://config-api.example.com',
+                'my-api-key',
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', ['api-key' => 'my-api-key']);
+    }
+
+    public function testRunPrefersApiBaseUrlEnvVarOverConfigDefault(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->config->allows('getDefaultApiBaseUrl')->andReturn('https://config-api.example.com');
+        $this->config->allows('getDefaultBaseUrl')->andReturn('https://gui.example.com');
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_API_BASE_URL')
+            ->andReturn('https://env-api.example.com');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://env-api.example.com',
+                'my-api-key',
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', ['api-key' => 'my-api-key']);
+    }
+
+    public function testRunResolvesApiKeyFromConfigDefault(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->config->allows('getDefaultApiKey')->andReturn('config-api-key');
+        $this->config->allows('getDefaultBaseUrl')->andReturn('https://gui.example.com');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'config-api-key',
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com']);
+    }
+
+    public function testRunPrefersApiKeyEnvVarOverConfigDefault(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->config->allows('getDefaultApiKey')->andReturn('config-api-key');
+        $this->config->allows('getDefaultBaseUrl')->andReturn('https://gui.example.com');
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_API_KEY')
+            ->andReturn('env-api-key');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'env-api-key',
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com']);
+    }
+
+    public function testRunResolvesFilterFromConfigDefault(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->config->allows('getDefaultFilter')->andReturn('config-filter');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                'config-filter',
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'my-api-key',
+        ]);
+    }
+
+    public function testRunPrefersFilterOptionOverConfigDefault(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->config->allows('getDefaultFilter')->andReturn('config-filter');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                'option-filter',
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'my-api-key',
+            'filter' => 'option-filter',
+        ]);
     }
 }

@@ -34,6 +34,38 @@ class MissingConfig implements ConfigInterface
     /**
      * @inheritDoc
      */
+    public function getDefaultApiBaseUrl(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDefaultApiKey(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDefaultBaseUrl(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDefaultFilter(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getDefaultSuite(): ?string
     {
         return null;
@@ -57,6 +89,46 @@ class MissingConfig implements ConfigInterface
     public function isPresent(): bool
     {
         return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDefaultApiBaseUrl(string $apiBaseUrl): ConfigInterface
+    {
+        throw new MissingConfigurationException(
+            'Cannot set default API base URL for a MissingConfig - did you mean to use Config?'
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDefaultApiKey(string $apiKey): ConfigInterface
+    {
+        throw new MissingConfigurationException(
+            'Cannot set default API key for a MissingConfig - did you mean to use Config?'
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDefaultBaseUrl(string $baseUrl): ConfigInterface
+    {
+        throw new MissingConfigurationException(
+            'Cannot set default base URL for a MissingConfig - did you mean to use Config?'
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDefaultFilter(string $filter): ConfigInterface
+    {
+        throw new MissingConfigurationException(
+            'Cannot set default filter for a MissingConfig - did you mean to use Config?'
+        );
     }
 
     /**

@@ -71,6 +71,7 @@ class BinScriptFunctionalTest extends AbstractFunctionalTestCase
         $result = $this->runBin(
             ['--project', $this->fixturesPath, 'run', 'mysuite'],
             [
+                'TAPPET_BASE_URL' => 'https://gui.example.com',
                 'TAPPET_API_BASE_URL' => 'https://project-option.example.com',
                 'TAPPET_API_KEY' => 'project-option-key',
             ]
@@ -78,7 +79,7 @@ class BinScriptFunctionalTest extends AbstractFunctionalTestCase
 
         static::assertSame(0, $result['exitCode']);
         static::assertSame(
-            'Test suite "mysuite" output. API base URL: "https://project-option.example.com". API key: "project-option-key".',
+            'Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://project-option.example.com". API key: "project-option-key".',
             $result['stdout']
         );
         static::assertSame('', $result['stderr']);
@@ -89,6 +90,7 @@ class BinScriptFunctionalTest extends AbstractFunctionalTestCase
         $result = $this->runBin(
             ['--project=' . $this->fixturesPath, 'run', 'mysuite'],
             [
+                'TAPPET_BASE_URL' => 'https://gui.example.com',
                 'TAPPET_API_BASE_URL' => 'https://project-option.example.com',
                 'TAPPET_API_KEY' => 'project-option-key',
             ]
@@ -96,7 +98,7 @@ class BinScriptFunctionalTest extends AbstractFunctionalTestCase
 
         static::assertSame(0, $result['exitCode']);
         static::assertSame(
-            'Test suite "mysuite" output. API base URL: "https://project-option.example.com". API key: "project-option-key".',
+            'Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://project-option.example.com". API key: "project-option-key".',
             $result['stdout']
         );
         static::assertSame('', $result['stderr']);
@@ -107,6 +109,7 @@ class BinScriptFunctionalTest extends AbstractFunctionalTestCase
         $result = $this->runBin(
             ['--project', $this->fixturesPath],
             [
+                'TAPPET_BASE_URL' => 'https://gui.example.com',
                 'TAPPET_API_BASE_URL' => 'https://project-option.example.com',
                 'TAPPET_API_KEY' => 'project-option-key',
             ]
@@ -114,7 +117,7 @@ class BinScriptFunctionalTest extends AbstractFunctionalTestCase
 
         static::assertSame(0, $result['exitCode']);
         static::assertSame(
-            'Test suite "mysuite" output. API base URL: "https://project-option.example.com". API key: "project-option-key".',
+            'Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://project-option.example.com". API key: "project-option-key".',
             $result['stdout']
         );
         static::assertSame('', $result['stderr']);
@@ -141,6 +144,8 @@ class BinScriptFunctionalTest extends AbstractFunctionalTestCase
             [
                 '--project',
                 $this->fixturesPath,
+                '--base-url',
+                'https://gui.example.com',
                 '--api-base-url',
                 'https://option.example.com',
                 '--api-key',
@@ -150,7 +155,7 @@ class BinScriptFunctionalTest extends AbstractFunctionalTestCase
 
         static::assertSame(0, $result['exitCode']);
         static::assertSame(
-            'Test suite "mysuite" output. API base URL: "https://option.example.com". API key: "option-key".',
+            'Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://option.example.com". API key: "option-key".',
             $result['stdout']
         );
         static::assertSame('', $result['stderr']);

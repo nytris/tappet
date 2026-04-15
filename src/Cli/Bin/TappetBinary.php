@@ -103,6 +103,8 @@ Usage: tappet [<command>] [options]
 Global options:
   --api-base-url <url>    Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).
   --api-key <key>         Tappet API key (or TAPPET_API_KEY env var).
+  --base-url <url>        Base URL of the GUI application under test (or TAPPET_BASE_URL env var).
+  --filter <pattern>      Filter tests by name pattern.
   --project <path>        Path to the project root directory.
 
 Commands:

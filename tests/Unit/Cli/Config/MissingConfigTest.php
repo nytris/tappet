@@ -35,6 +35,26 @@ class MissingConfigTest extends AbstractTestCase
         $this->config = new MissingConfig();
     }
 
+    public function testGetDefaultApiBaseUrlReturnsNull(): void
+    {
+        static::assertNull($this->config->getDefaultApiBaseUrl());
+    }
+
+    public function testGetDefaultApiKeyReturnsNull(): void
+    {
+        static::assertNull($this->config->getDefaultApiKey());
+    }
+
+    public function testGetDefaultBaseUrlReturnsNull(): void
+    {
+        static::assertNull($this->config->getDefaultBaseUrl());
+    }
+
+    public function testGetDefaultFilterReturnsNull(): void
+    {
+        static::assertNull($this->config->getDefaultFilter());
+    }
+
     public function testGetDefaultSuiteReturnsNull(): void
     {
         static::assertNull($this->config->getDefaultSuite());
@@ -56,6 +76,38 @@ class MissingConfigTest extends AbstractTestCase
     public function testIsPresentReturnsFalse(): void
     {
         static::assertFalse($this->config->isPresent());
+    }
+
+    public function testSetDefaultApiBaseUrlRaisesException(): void
+    {
+        $this->expectException(MissingConfigurationException::class);
+        $this->expectExceptionMessage('Cannot set default API base URL for a MissingConfig - did you mean to use Config?');
+
+        $this->config->setDefaultApiBaseUrl('https://api.example.com');
+    }
+
+    public function testSetDefaultApiKeyRaisesException(): void
+    {
+        $this->expectException(MissingConfigurationException::class);
+        $this->expectExceptionMessage('Cannot set default API key for a MissingConfig - did you mean to use Config?');
+
+        $this->config->setDefaultApiKey('my-key');
+    }
+
+    public function testSetDefaultBaseUrlRaisesException(): void
+    {
+        $this->expectException(MissingConfigurationException::class);
+        $this->expectExceptionMessage('Cannot set default base URL for a MissingConfig - did you mean to use Config?');
+
+        $this->config->setDefaultBaseUrl('https://myapp.example.com');
+    }
+
+    public function testSetDefaultFilterRaisesException(): void
+    {
+        $this->expectException(MissingConfigurationException::class);
+        $this->expectExceptionMessage('Cannot set default filter for a MissingConfig - did you mean to use Config?');
+
+        $this->config->setDefaultFilter('login');
     }
 
     public function testSetDefaultSuiteRaisesException(): void

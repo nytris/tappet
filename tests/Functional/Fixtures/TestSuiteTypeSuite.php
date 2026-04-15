@@ -74,9 +74,13 @@ class TestSuiteTypeSuite implements SuiteInterface
     /**
      * @inheritDoc
      */
-    public function run(string $projectRoot, string $suiteName, string $apiBaseUrl, string $apiKey, array $options): ResultInterface
+    public function run(string $projectRoot, string $suiteName, string $baseUrl, string $apiBaseUrl, string $apiKey, ?string $filter, array $options): ResultInterface
     {
         $output = 'Test suite "' . $suiteName . '" output.';
+
+        if ($baseUrl !== '') {
+            $output .= ' Base URL: "' . $baseUrl . '".';
+        }
 
         if ($apiBaseUrl !== '') {
             $output .= ' API base URL: "' . $apiBaseUrl . '".';
@@ -84,6 +88,10 @@ class TestSuiteTypeSuite implements SuiteInterface
 
         if ($apiKey !== '') {
             $output .= ' API key: "' . $apiKey . '".';
+        }
+
+        if ($filter !== null) {
+            $output .= ' Filter: "' . $filter . '".';
         }
 
         return new TestResult($output, false);

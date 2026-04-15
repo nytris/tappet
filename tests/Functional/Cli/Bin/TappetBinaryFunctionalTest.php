@@ -46,6 +46,7 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
         $this->environment = new TestEnvironment([
             'TAPPET_API_BASE_URL' => 'https://default.example.com',
             'TAPPET_API_KEY' => 'default-test-key',
+            'TAPPET_BASE_URL' => 'https://gui.example.com',
         ]);
         $this->fixturesPath = __DIR__ . '/../../Fixtures/TappetConfiguredApp';
         $this->recordingStdout = new RecordingOutput();
@@ -74,7 +75,7 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
         $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet']));
 
         static::assertSame(0, $exitCode);
-        static::assertSame('Test suite "mysuite" output. API base URL: "https://default.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
+        static::assertSame('Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://default.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
         static::assertSame('', $this->recordingStderr->getOutput());
     }
 
@@ -83,7 +84,7 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
         $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run', 'mysuite']));
 
         static::assertSame(0, $exitCode);
-        static::assertSame('Test suite "mysuite" output. API base URL: "https://default.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
+        static::assertSame('Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://default.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
         static::assertSame('', $this->recordingStderr->getOutput());
     }
 
@@ -92,7 +93,7 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
         $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run']));
 
         static::assertSame(0, $exitCode);
-        static::assertSame('Test suite "mysuite" output. API base URL: "https://default.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
+        static::assertSame('Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://default.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
     }
 
     public function testRunWithNoApiBaseUrlWritesErrorToStderrAndReturnsExitCodeOne(): void
@@ -126,7 +127,7 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
         $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run', 'mysuite', '--api-key', 'my-secret-key']));
 
         static::assertSame(0, $exitCode);
-        static::assertSame('Test suite "mysuite" output. API base URL: "https://default.example.com". API key: "my-secret-key".', $this->recordingStdout->getOutput());
+        static::assertSame('Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://default.example.com". API key: "my-secret-key".', $this->recordingStdout->getOutput());
         static::assertSame('', $this->recordingStderr->getOutput());
     }
 
@@ -137,7 +138,7 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
         $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run', 'mysuite']));
 
         static::assertSame(0, $exitCode);
-        static::assertSame('Test suite "mysuite" output. API base URL: "https://default.example.com". API key: "env-secret-key".', $this->recordingStdout->getOutput());
+        static::assertSame('Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://default.example.com". API key: "env-secret-key".', $this->recordingStdout->getOutput());
         static::assertSame('', $this->recordingStderr->getOutput());
     }
 
@@ -148,7 +149,7 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
         $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run', 'mysuite', '--api-key', 'option-key']));
 
         static::assertSame(0, $exitCode);
-        static::assertSame('Test suite "mysuite" output. API base URL: "https://default.example.com". API key: "option-key".', $this->recordingStdout->getOutput());
+        static::assertSame('Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://default.example.com". API key: "option-key".', $this->recordingStdout->getOutput());
         static::assertSame('', $this->recordingStderr->getOutput());
     }
 
@@ -157,7 +158,7 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
         $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run', 'mysuite', '--api-base-url', 'https://custom.example.com']));
 
         static::assertSame(0, $exitCode);
-        static::assertSame('Test suite "mysuite" output. API base URL: "https://custom.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
+        static::assertSame('Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://custom.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
         static::assertSame('', $this->recordingStderr->getOutput());
     }
 
@@ -168,7 +169,7 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
         $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run', 'mysuite']));
 
         static::assertSame(0, $exitCode);
-        static::assertSame('Test suite "mysuite" output. API base URL: "https://env.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
+        static::assertSame('Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://env.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
         static::assertSame('', $this->recordingStderr->getOutput());
     }
 
@@ -179,7 +180,7 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
         $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run', 'mysuite', '--api-base-url', 'https://option.example.com']));
 
         static::assertSame(0, $exitCode);
-        static::assertSame('Test suite "mysuite" output. API base URL: "https://option.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
+        static::assertSame('Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://option.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
         static::assertSame('', $this->recordingStderr->getOutput());
     }
 
@@ -206,6 +207,8 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
             Global options:
               --api-base-url <url>    Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).
               --api-key <key>         Tappet API key (or TAPPET_API_KEY env var).
+              --base-url <url>        Base URL of the GUI application under test (or TAPPET_BASE_URL env var).
+              --filter <pattern>      Filter tests by name pattern.
               --project <path>        Path to the project root directory.
 
             Commands:
@@ -243,6 +246,8 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
             Global options:
               --api-base-url <url>    Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).
               --api-key <key>         Tappet API key (or TAPPET_API_KEY env var).
+              --base-url <url>        Base URL of the GUI application under test (or TAPPET_BASE_URL env var).
+              --filter <pattern>      Filter tests by name pattern.
               --project <path>        Path to the project root directory.
 
             Commands:
@@ -272,6 +277,8 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
             Global options:
               --api-base-url <url>    Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).
               --api-key <key>         Tappet API key (or TAPPET_API_KEY env var).
+              --base-url <url>        Base URL of the GUI application under test (or TAPPET_BASE_URL env var).
+              --filter <pattern>      Filter tests by name pattern.
 
             EXPECTED,
             $this->recordingStderr->getOutput()
@@ -294,6 +301,8 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
             Global options:
               --api-base-url <url>    Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).
               --api-key <key>         Tappet API key (or TAPPET_API_KEY env var).
+              --base-url <url>        Base URL of the GUI application under test (or TAPPET_BASE_URL env var).
+              --filter <pattern>      Filter tests by name pattern.
 
             EXPECTED,
             $this->recordingStderr->getOutput()
@@ -317,5 +326,66 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
 
         static::assertSame(1, $exitCode);
         static::assertSame('Error: unrecognised option "--unknown-option".' . PHP_EOL, $this->recordingStderr->getOutput());
+    }
+
+    public function testRunWithNoBaseUrlWritesErrorToStderrAndReturnsExitCodeOne(): void
+    {
+        $this->environment->unsetVariable('TAPPET_BASE_URL');
+
+        $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run', 'mysuite']));
+
+        static::assertSame(1, $exitCode);
+        static::assertSame(
+            'Error: no base URL specified. Provide one via --base-url or the TAPPET_BASE_URL environment variable.' . PHP_EOL,
+            $this->recordingStderr->getOutput()
+        );
+    }
+
+    public function testRunPassesBaseUrlOptionToSuite(): void
+    {
+        $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run', 'mysuite', '--base-url', 'https://myapp.example.com']));
+
+        static::assertSame(0, $exitCode);
+        static::assertSame('Test suite "mysuite" output. Base URL: "https://myapp.example.com". API base URL: "https://default.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
+        static::assertSame('', $this->recordingStderr->getOutput());
+    }
+
+    public function testRunPassesBaseUrlEnvironmentVariableToSuite(): void
+    {
+        $this->environment->setVariable('TAPPET_BASE_URL', 'https://env-gui.example.com');
+
+        $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run', 'mysuite']));
+
+        static::assertSame(0, $exitCode);
+        static::assertSame('Test suite "mysuite" output. Base URL: "https://env-gui.example.com". API base URL: "https://default.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
+        static::assertSame('', $this->recordingStderr->getOutput());
+    }
+
+    public function testRunBaseUrlOptionTakesPrecedenceOverEnvironmentVariable(): void
+    {
+        $this->environment->setVariable('TAPPET_BASE_URL', 'https://env-gui.example.com');
+
+        $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run', 'mysuite', '--base-url', 'https://option-gui.example.com']));
+
+        static::assertSame(0, $exitCode);
+        static::assertSame('Test suite "mysuite" output. Base URL: "https://option-gui.example.com". API base URL: "https://default.example.com". API key: "default-test-key".', $this->recordingStdout->getOutput());
+        static::assertSame('', $this->recordingStderr->getOutput());
+    }
+
+    public function testRunPassesFilterOptionToSuite(): void
+    {
+        $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run', 'mysuite', '--filter', 'login']));
+
+        static::assertSame(0, $exitCode);
+        static::assertSame('Test suite "mysuite" output. Base URL: "https://gui.example.com". API base URL: "https://default.example.com". API key: "default-test-key". Filter: "login".', $this->recordingStdout->getOutput());
+        static::assertSame('', $this->recordingStderr->getOutput());
+    }
+
+    public function testRunWithoutFilterOptionPassesNullFilterToSuite(): void
+    {
+        $exitCode = $this->tappetBinary->run($this->cliParser->parse(['tappet', 'run', 'mysuite']));
+
+        static::assertSame(0, $exitCode);
+        static::assertStringNotContainsString('Filter:', $this->recordingStdout->getOutput());
     }
 }

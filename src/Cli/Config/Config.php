@@ -26,8 +26,44 @@ use Tappet\Cli\Implementation\ImplementationInterface;
  */
 class Config implements ConfigInterface
 {
+    private ?string $defaultApiBaseUrl = null;
+    private ?string $defaultApiKey = null;
+    private ?string $defaultBaseUrl = null;
+    private ?string $defaultFilter = null;
     private ?string $defaultSuiteName = null;
     private ?ImplementationInterface $implementation = null;
+
+    /**
+     * @inheritDoc
+     */
+    public function getDefaultApiBaseUrl(): ?string
+    {
+        return $this->defaultApiBaseUrl;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDefaultApiKey(): ?string
+    {
+        return $this->defaultApiKey;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDefaultBaseUrl(): ?string
+    {
+        return $this->defaultBaseUrl;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDefaultFilter(): ?string
+    {
+        return $this->defaultFilter;
+    }
 
     /**
      * @inheritDoc
@@ -55,6 +91,46 @@ class Config implements ConfigInterface
     public function isPresent(): bool
     {
         return true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDefaultApiBaseUrl(string $apiBaseUrl): ConfigInterface
+    {
+        $this->defaultApiBaseUrl = $apiBaseUrl;
+
+        return $this; // Fluent interface.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDefaultApiKey(string $apiKey): ConfigInterface
+    {
+        $this->defaultApiKey = $apiKey;
+
+        return $this; // Fluent interface.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDefaultBaseUrl(string $baseUrl): ConfigInterface
+    {
+        $this->defaultBaseUrl = $baseUrl;
+
+        return $this; // Fluent interface.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDefaultFilter(string $filter): ConfigInterface
+    {
+        $this->defaultFilter = $filter;
+
+        return $this; // Fluent interface.
     }
 
     /**

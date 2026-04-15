@@ -64,16 +64,20 @@ interface SuiteInterface
      *
      * @param string $projectRoot The root of the project.
      * @param string $suiteName The name of the suite to run.
+     * @param string $baseUrl The base URL of the GUI application under test.
      * @param string $apiBaseUrl The base URL of the Tappet API.
      * @param string $apiKey The API key to authenticate with.
+     * @param string|null $filter An optional filter to run only matching tests.
      * @param array<string, mixed> $options CLI options.
      * @throws ExceptionInterface When an error occurs during the run.
      */
     public function run(
         string $projectRoot,
         string $suiteName,
+        string $baseUrl,
         string $apiBaseUrl,
         string $apiKey,
+        ?string $filter,
         array $options
     ): ResultInterface;
 }

@@ -20,6 +20,7 @@ use Tappet\Core\Exception\ConfigurationExceptionInterface;
 use Tappet\Core\Exception\ExceptionInterface;
 use Tappet\Core\Exception\MissingApiBaseUrlException;
 use Tappet\Core\Exception\MissingApiKeyException;
+use Tappet\Core\Exception\MissingBaseUrlException;
 use Tappet\Suite\Cli\CliOptionInterface;
 use Tappet\Suite\Cli\CliSpecInterface;
 use Tappet\Suite\Result\ResultInterface;
@@ -38,7 +39,7 @@ class RunCommand implements RunCommandInterface
     /**
      * Options that are always valid regardless of the suite's CLI spec.
      */
-    private const GLOBAL_OPTION_NAMES = ['api-base-url', 'api-key', 'help', 'project'];
+    private const GLOBAL_OPTION_NAMES = ['api-base-url', 'api-key', 'base-url', 'filter', 'help', 'project'];
 
     /**
      * @param SuiteResolverInterface<SuiteInterface> $suiteResolver
@@ -130,10 +131,21 @@ class RunCommand implements RunCommandInterface
             }
         }
 
-        $apiBaseUrl = (string) ($options['api-base-url'] ?? $this->environment->getEnvironmentVariable('TAPPET_API_BASE_URL') ?? '');
-        $apiKey = (string) ($options['api-key'] ?? $this->environment->getEnvironmentVariable('TAPPET_API_KEY') ?? '');
+        $baseUrl = (string) ($options['base-url'] ?? $this->environment->getEnvironmentVariable('TAPPET_BASE_URL') ?? $this->config->getDefaultBaseUrl() ?? '');
+        $apiBaseUrl = (string) ($options['api-base-url'] ?? $this->environment->getEnvironmentVariable('TAPPET_API_BASE_URL') ?? $this->config->getDefaultApiBaseUrl() ?? '');
+        $apiKey = (string) ($options['api-key'] ?? $this->environment->getEnvironmentVariable('TAPPET_API_KEY') ?? $this->config->getDefaultApiKey() ?? '');
+        $filter = isset($options['filter']) ? (string) $options['filter'] : $this->config->getDefaultFilter();
+
+        // Tidy up $options: it should only pass through custom options that the suite expects, as defined by its CliSpec.
+        unset($options['api-base-url'], $options['api-key'], $options['base-url'], $options['filter']);
 
         try {
+            if ($baseUrl === '') {
+                throw new MissingBaseUrlException(
+                    'Error: no base URL specified. Provide one via --base-url or the TAPPET_BASE_URL environment variable.'
+                );
+            }
+
             if ($apiBaseUrl === '') {
                 throw new MissingApiBaseUrlException(
                     'Error: no API base URL specified. Provide one via --api-base-url or the TAPPET_API_BASE_URL environment variable.'
@@ -147,7 +159,7 @@ class RunCommand implements RunCommandInterface
             }
 
             // Run the test suite.
-            $result = $suite->run($this->projectRoot, $resolvedSuiteName, $apiBaseUrl, $apiKey, $options);
+            $result = $suite->run($this->projectRoot, $resolvedSuiteName, $baseUrl, $apiBaseUrl, $apiKey, $filter, $options);
         } catch (ExceptionInterface $exception) {
             $this->stderr->write($exception->getMessage() . PHP_EOL);
 
@@ -170,6 +182,8 @@ Run 'tappet run <suite-name> --help' for suite-specific options.
 Global options:
   --api-base-url <url>    Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).
   --api-key <key>         Tappet API key (or TAPPET_API_KEY env var).
+  --base-url <url>        Base URL of the GUI application under test (or TAPPET_BASE_URL env var).
+  --filter <pattern>      Filter tests by name pattern.
 
 HELP;
     }
@@ -208,6 +222,8 @@ HELP;
         $lines[] = 'Global options:';
         $lines[] = sprintf('  %-24s%s', '--api-base-url <url>', 'Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).');
         $lines[] = sprintf('  %-24s%s', '--api-key <key>', 'Tappet API key (or TAPPET_API_KEY env var).');
+        $lines[] = sprintf('  %-24s%s', '--base-url <url>', 'Base URL of the GUI application under test (or TAPPET_BASE_URL env var).');
+        $lines[] = sprintf('  %-24s%s', '--filter <pattern>', 'Filter tests by name pattern.');
         $lines[] = '';
 
         return implode(PHP_EOL, $lines);

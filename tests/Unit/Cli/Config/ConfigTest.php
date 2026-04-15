@@ -34,6 +34,26 @@ class ConfigTest extends AbstractTestCase
         $this->config = new Config();
     }
 
+    public function testGetDefaultApiBaseUrlReturnsNullInitially(): void
+    {
+        static::assertNull($this->config->getDefaultApiBaseUrl());
+    }
+
+    public function testGetDefaultApiKeyReturnsNullInitially(): void
+    {
+        static::assertNull($this->config->getDefaultApiKey());
+    }
+
+    public function testGetDefaultBaseUrlReturnsNullInitially(): void
+    {
+        static::assertNull($this->config->getDefaultBaseUrl());
+    }
+
+    public function testGetDefaultFilterReturnsNullInitially(): void
+    {
+        static::assertNull($this->config->getDefaultFilter());
+    }
+
     public function testGetDefaultSuiteReturnsNullInitially(): void
     {
         static::assertNull($this->config->getDefaultSuite());
@@ -42,6 +62,62 @@ class ConfigTest extends AbstractTestCase
     public function testIsPresentReturnsTrue(): void
     {
         static::assertTrue($this->config->isPresent());
+    }
+
+    public function testSetDefaultApiBaseUrlSetsTheApiBaseUrl(): void
+    {
+        $this->config->setDefaultApiBaseUrl('https://api.example.com');
+
+        static::assertSame('https://api.example.com', $this->config->getDefaultApiBaseUrl());
+    }
+
+    public function testSetDefaultApiBaseUrlReturnsConfigForFluentInterface(): void
+    {
+        $result = $this->config->setDefaultApiBaseUrl('https://api.example.com');
+
+        static::assertSame($this->config, $result);
+    }
+
+    public function testSetDefaultApiKeySetsTheApiKey(): void
+    {
+        $this->config->setDefaultApiKey('my-secret-key');
+
+        static::assertSame('my-secret-key', $this->config->getDefaultApiKey());
+    }
+
+    public function testSetDefaultApiKeyReturnsConfigForFluentInterface(): void
+    {
+        $result = $this->config->setDefaultApiKey('my-secret-key');
+
+        static::assertSame($this->config, $result);
+    }
+
+    public function testSetDefaultBaseUrlSetsTheBaseUrl(): void
+    {
+        $this->config->setDefaultBaseUrl('https://myapp.example.com');
+
+        static::assertSame('https://myapp.example.com', $this->config->getDefaultBaseUrl());
+    }
+
+    public function testSetDefaultBaseUrlReturnsConfigForFluentInterface(): void
+    {
+        $result = $this->config->setDefaultBaseUrl('https://myapp.example.com');
+
+        static::assertSame($this->config, $result);
+    }
+
+    public function testSetDefaultFilterSetsTheFilter(): void
+    {
+        $this->config->setDefaultFilter('login');
+
+        static::assertSame('login', $this->config->getDefaultFilter());
+    }
+
+    public function testSetDefaultFilterReturnsConfigForFluentInterface(): void
+    {
+        $result = $this->config->setDefaultFilter('login');
+
+        static::assertSame($this->config, $result);
     }
 
     public function testSetDefaultSuiteSetsTheSuite(): void
