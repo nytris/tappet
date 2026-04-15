@@ -47,6 +47,16 @@ class ConfigResolverTest extends AbstractTestCase
         static::assertSame('mysuite', $config->getDefaultSuite());
     }
 
+    public function testResolveConfigLoadsLocalConfigFileWhenBothExist(): void
+    {
+        $configResolver = new ConfigResolver(dirname(__DIR__, 2) . '/Fixtures/ConfigResolver/local');
+
+        $config = $configResolver->resolveConfig();
+
+        static::assertInstanceOf(Config::class, $config);
+        static::assertSame('fromlocal', $config->getDefaultSuite());
+    }
+
     public function testResolveConfigReturnsMissingConfigWhenConfigFileDoesNotExist(): void
     {
         $configResolver = new ConfigResolver('/nonexistent/path');

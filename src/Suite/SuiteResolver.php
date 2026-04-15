@@ -33,6 +33,10 @@ class SuiteResolver implements SuiteResolverInterface
      */
     private $configFileNameTemplate;
     /**
+     * @var string
+     */
+    private $localConfigFileNameTemplate;
+    /**
      * @var array<string>
      */
     private $paths;
@@ -48,9 +52,11 @@ class SuiteResolver implements SuiteResolverInterface
     public function __construct(
         string $suiteClass,
         array $paths,
-        string $configFileNameTemplate = 'tappet.{suite-name}.suite.php'
+        string $configFileNameTemplate = 'tappet.{suite-name}.suite.php',
+        string $localConfigFileNameTemplate = 'tappet.{suite-name}.suite.local.php'
     ) {
         $this->configFileNameTemplate = $configFileNameTemplate;
+        $this->localConfigFileNameTemplate = $localConfigFileNameTemplate;
         $this->paths = $paths;
         $this->suiteClass = $suiteClass;
     }
@@ -64,24 +70,34 @@ class SuiteResolver implements SuiteResolverInterface
     {
         $configFileName = str_replace('{suite-name}', $suiteName, $this->configFileNameTemplate);
 
+        // Check the local config file first, falling back to the standard config file.
+        $localConfigFileName = str_replace('{suite-name}', $suiteName, $this->localConfigFileNameTemplate);
+
         foreach ($this->paths as $path) {
+            $localConfigPath = $path . DIRECTORY_SEPARATOR . $localConfigFileName;
             $configPath = $path . DIRECTORY_SEPARATOR . $configFileName;
 
-            if (is_file($configPath)) {
-                $config = require $configPath;
-
-                if (!($config instanceof $this->suiteClass)) {
-                    throw new InvalidConfigurationException(
-                        sprintf(
-                            'Return value of module %s is expected to be an instance of %s but was not',
-                            $configPath,
-                            $this->suiteClass
-                        )
-                    );
-                }
-
-                return $config;
+            if (is_file($localConfigPath)) {
+                $resolvedPath = $localConfigPath;
+            } elseif (is_file($configPath)) {
+                $resolvedPath = $configPath;
+            } else {
+                continue;
             }
+
+            $config = require $resolvedPath;
+
+            if (!($config instanceof $this->suiteClass)) {
+                throw new InvalidConfigurationException(
+                    sprintf(
+                        'Return value of module %s is expected to be an instance of %s but was not',
+                        $resolvedPath,
+                        $this->suiteClass
+                    )
+                );
+            }
+
+            return $config;
         }
 
         throw new MissingConfigurationException(

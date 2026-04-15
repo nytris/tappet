@@ -26,7 +26,8 @@ class ConfigResolver implements ConfigResolverInterface
 {
     public function __construct(
         private readonly string $projectRoot,
-        private readonly string $configFileName = 'tappet.config.php'
+        private readonly string $configFileName = 'tappet.config.php',
+        private readonly string $localConfigFileName = 'tappet.config.local.php'
     ) {
     }
 
@@ -35,19 +36,25 @@ class ConfigResolver implements ConfigResolverInterface
      */
     public function resolveConfig(): ConfigInterface
     {
+        // Check the local config file first, falling back to the standard config file.
+        $localConfigPath = $this->projectRoot . DIRECTORY_SEPARATOR . $this->localConfigFileName;
         $configPath = $this->projectRoot . DIRECTORY_SEPARATOR . $this->configFileName;
 
-        if (!is_file($configPath)) {
+        if (is_file($localConfigPath)) {
+            $resolvedPath = $localConfigPath;
+        } elseif (is_file($configPath)) {
+            $resolvedPath = $configPath;
+        } else {
             return new MissingConfig();
         }
 
-        $config = require $configPath;
+        $config = require $resolvedPath;
 
         if (!($config instanceof ConfigInterface)) {
             throw new InvalidConfigurationException(
                 sprintf(
                     'Return value of module %s is expected to be an instance of %s but was not',
-                    $configPath,
+                    $resolvedPath,
                     ConfigInterface::class
                 )
             );

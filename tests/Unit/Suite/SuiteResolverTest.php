@@ -19,6 +19,7 @@ use Tappet\Suite\SuiteInterface;
 use Tappet\Suite\SuiteResolver;
 use Tappet\Tests\AbstractTestCase;
 use Tappet\Tests\Functional\Fixtures\TestSuiteTypeSuite;
+use Tappet\Tests\Unit\Fixtures\SuiteResolver\LocalTestSuiteTypeSuite;
 
 /**
  * Class SuiteResolverTest.
@@ -45,6 +46,16 @@ class SuiteResolverTest extends AbstractTestCase
         $suite = $this->suiteResolver->resolveSuite('mysuite');
 
         static::assertInstanceOf(TestSuiteTypeSuite::class, $suite);
+    }
+
+    public function testResolveSuiteLoadsLocalSuiteFileWhenBothExist(): void
+    {
+        $fixtureDir = dirname(__DIR__) . '/Fixtures/SuiteResolver/local';
+        $suiteResolver = new SuiteResolver(SuiteInterface::class, [$fixtureDir]);
+
+        $suite = $suiteResolver->resolveSuite('mysuite');
+
+        static::assertInstanceOf(LocalTestSuiteTypeSuite::class, $suite);
     }
 
     public function testResolveSuiteThrowsWhenFileDoesNotExist(): void
