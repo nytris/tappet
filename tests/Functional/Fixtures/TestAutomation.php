@@ -13,12 +13,13 @@ declare(strict_types=1);
 
 namespace Tappet\Tests\Functional\Fixtures;
 
-use Tappet\Core\Action\FieldActionInterface;
-use Tappet\Core\Action\InteractionInterface;
-use Tappet\Core\Assertion\RegionAssertionInterface;
-use Tappet\Core\Assertion\StateAssertionInterface;
-use Tappet\Core\Automation\AutomationInterface;
-use Tappet\Core\Environment\EnvironmentInterface;
+use Tappet\Runner\Action\FieldActionInterface;
+use Tappet\Runner\Action\InteractionInterface;
+use Tappet\Runner\Assertion\FieldAssertionInterface;
+use Tappet\Runner\Assertion\RegionAssertionInterface;
+use Tappet\Runner\Assertion\StateAssertionInterface;
+use Tappet\Runner\Automation\AutomationInterface;
+use Tappet\Runner\Transition\TransitionInterface;
 
 /**
  * Class TestAutomation.
@@ -35,14 +36,24 @@ class TestAutomation implements AutomationInterface
      */
     public array $operations = [];
 
-    public function assertPage(string $url, EnvironmentInterface $environment): void
+    public function assertTransitionLogEmpty(): void
     {
-        $this->operations[] = ['type' => 'assertPage', 'url' => $url];
+        $this->operations[] = ['type' => 'assertTransitionLogEmpty'];
+    }
+
+    public function checkForUnexpectedTransition(TransitionInterface $transition): void
+    {
+        $this->operations[] = ['type' => 'checkForUnexpectedTransition', 'transition' => $transition];
     }
 
     public function performFieldAction(FieldActionInterface $action): void
     {
         $this->operations[] = ['type' => 'performFieldAction', 'action' => $action];
+    }
+
+    public function performFieldAssertion(FieldAssertionInterface $assertion): void
+    {
+        $this->operations[] = ['type' => 'performFieldAssertion', 'assertion' => $assertion];
     }
 
     public function performInteraction(InteractionInterface $interaction): void
@@ -60,8 +71,18 @@ class TestAutomation implements AutomationInterface
         $this->operations[] = ['type' => 'performStateAssertion', 'assertion' => $assertion];
     }
 
+    public function pushTransition(TransitionInterface $transition): void
+    {
+        $this->operations[] = ['type' => 'pushTransition', 'transition' => $transition];
+    }
+
     public function visitPage(string $url): void
     {
         $this->operations[] = ['type' => 'visitPage', 'url' => $url];
+    }
+
+    public function waitForTransition(TransitionInterface $transition): void
+    {
+        $this->operations[] = ['type' => 'waitForTransition', 'transition' => $transition];
     }
 }

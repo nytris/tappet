@@ -19,7 +19,8 @@ use Tappet\Cli\Config\ConfigInterface;
 use Tappet\Cli\Config\MissingConfig;
 use Tappet\Cli\Environment\EnvironmentInterface;
 use Tappet\Cli\Io\RecordingOutput;
-use Tappet\Core\Exception\MissingConfigurationException;
+use Tappet\Common\Exception\MissingConfigurationException;
+use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Suite\Cli\CliOption;
 use Tappet\Suite\Cli\CliSpec;
 use Tappet\Suite\Result\ResultInterface;
@@ -39,7 +40,7 @@ class RunCommandTest extends AbstractTestCase
     private RunCommand $runCommand;
     private RecordingOutput $stderr;
     private RecordingOutput $stdout;
-    /** @var SuiteResolverInterface<SuiteInterface>&MockInterface */
+    /** @var SuiteResolverInterface<SuiteInterface<AutomationInterface>>&MockInterface */
     private SuiteResolverInterface&MockInterface $suiteResolver;
 
     public function setUp(): void

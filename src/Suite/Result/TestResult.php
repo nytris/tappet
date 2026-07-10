@@ -22,21 +22,10 @@ namespace Tappet\Suite\Result;
  */
 class TestResult implements ResultInterface
 {
-    /**
-     * @var bool
-     */
-    private $hasFailures;
-    /**
-     * @var string
-     */
-    private $output;
-
     public function __construct(
-        string $output,
-        bool $hasFailures = false
+        private readonly string $output,
+        private readonly bool $hasFailures = false
     ) {
-        $this->hasFailures = $hasFailures;
-        $this->output = $output;
     }
 
     /**

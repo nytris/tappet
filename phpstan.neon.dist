@@ -1,9 +1,11 @@
 includes:
+    - phpstan-baseline.neon.dist
     - vendor/phpstan/phpstan-mockery/extension.neon
 
 parameters:
     level: 6
     paths:
+        - bin/
         - src/
         - tests/
     tmpDir: var/phpstan/

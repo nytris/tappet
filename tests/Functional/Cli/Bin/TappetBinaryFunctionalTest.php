@@ -19,6 +19,7 @@ use Tappet\Cli\Bin\RunCommand;
 use Tappet\Cli\Bin\TappetBinary;
 use Tappet\Cli\Config\ConfigResolver;
 use Tappet\Cli\Io\RecordingOutput;
+use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Suite\SuiteInterface;
 use Tappet\Suite\SuiteResolver;
 use Tappet\Tests\Functional\AbstractFunctionalTestCase;
@@ -55,6 +56,7 @@ class TappetBinaryFunctionalTest extends AbstractFunctionalTestCase
         $configResolver = new ConfigResolver($this->fixturesPath);
         $config = $configResolver->resolveConfig();
 
+        /** @var SuiteResolver<SuiteInterface<AutomationInterface>> $suiteResolver */
         $suiteResolver = new SuiteResolver(SuiteInterface::class, [$this->fixturesPath]);
         $runCommand = new RunCommand(
             $config,

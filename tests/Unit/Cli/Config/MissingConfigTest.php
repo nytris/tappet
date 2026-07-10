@@ -16,7 +16,7 @@ namespace Tappet\Tests\Unit\Cli\Config;
 use Tappet\Cli\Config\MissingConfig;
 use Tappet\Cli\Implementation\DefaultImplementation;
 use Tappet\Cli\Implementation\ImplementationInterface;
-use Tappet\Core\Exception\MissingConfigurationException;
+use Tappet\Common\Exception\MissingConfigurationException;
 use Tappet\Tests\AbstractTestCase;
 
 /**

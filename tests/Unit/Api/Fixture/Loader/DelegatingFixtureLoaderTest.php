@@ -18,8 +18,8 @@ use Mockery\MockInterface;
 use Tappet\Api\Fixture\Loader\DelegatingFixtureLoader;
 use Tappet\Api\Fixture\Loader\FixtureLoaderInterface;
 use Tappet\Api\Fixture\Loader\LoaderPairInterface;
-use Tappet\Core\Fixture\FixtureInterface;
-use Tappet\Core\Fixture\ModelInterface;
+use Tappet\Common\Fixture\FixtureInterface;
+use Tappet\Common\Fixture\ModelInterface;
 use Tappet\Tests\AbstractTestCase;
 
 /**

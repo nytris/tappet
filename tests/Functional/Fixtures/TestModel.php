@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Tappet\Tests\Functional\Fixtures;
 
-use Tappet\Core\Fixture\ModelInterface;
+use Tappet\Common\Fixture\ModelInterface;
 
 /**
  * Class TestModel.

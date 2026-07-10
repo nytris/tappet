@@ -16,11 +16,12 @@ namespace Tappet\Cli\Bin;
 use Tappet\Cli\Config\ConfigInterface;
 use Tappet\Cli\Environment\EnvironmentInterface;
 use Tappet\Cli\Io\OutputInterface;
-use Tappet\Core\Exception\ConfigurationExceptionInterface;
-use Tappet\Core\Exception\ExceptionInterface;
-use Tappet\Core\Exception\MissingApiBaseUrlException;
-use Tappet\Core\Exception\MissingApiKeyException;
-use Tappet\Core\Exception\MissingBaseUrlException;
+use Tappet\Common\Exception\ConfigurationExceptionInterface;
+use Tappet\Common\Exception\ExceptionInterface;
+use Tappet\Common\Exception\MissingApiBaseUrlException;
+use Tappet\Common\Exception\MissingApiKeyException;
+use Tappet\Common\Exception\MissingBaseUrlException;
+use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Suite\Cli\CliOptionInterface;
 use Tappet\Suite\Cli\CliSpecInterface;
 use Tappet\Suite\Result\ResultInterface;
@@ -42,7 +43,7 @@ class RunCommand implements RunCommandInterface
     private const GLOBAL_OPTION_NAMES = ['api-base-url', 'api-key', 'base-url', 'filter', 'help', 'project'];
 
     /**
-     * @param SuiteResolverInterface<SuiteInterface> $suiteResolver
+     * @param SuiteResolverInterface<SuiteInterface<AutomationInterface>> $suiteResolver
      */
     public function __construct(
         private readonly ConfigInterface $config,

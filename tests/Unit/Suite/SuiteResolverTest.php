@@ -13,8 +13,9 @@ declare(strict_types=1);
 
 namespace Tappet\Tests\Unit\Suite;
 
-use Tappet\Core\Exception\InvalidConfigurationException;
-use Tappet\Core\Exception\MissingConfigurationException;
+use Tappet\Common\Exception\InvalidConfigurationException;
+use Tappet\Common\Exception\MissingConfigurationException;
+use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Suite\SuiteInterface;
 use Tappet\Suite\SuiteResolver;
 use Tappet\Tests\AbstractTestCase;
@@ -29,7 +30,7 @@ use Tappet\Tests\Unit\Fixtures\SuiteResolver\LocalTestSuiteTypeSuite;
 class SuiteResolverTest extends AbstractTestCase
 {
     private string $fixturesPath;
-    /** @var SuiteResolver<SuiteInterface> */
+    /** @var SuiteResolver<SuiteInterface<AutomationInterface>> */
     private SuiteResolver $suiteResolver;
 
     public function setUp(): void

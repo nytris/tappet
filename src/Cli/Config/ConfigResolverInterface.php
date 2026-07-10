@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Tappet\Cli\Config;
 
-use Tappet\Core\Exception\InvalidConfigurationException;
-use Tappet\Core\Exception\MissingConfigurationException;
+use Tappet\Common\Exception\InvalidConfigurationException;
+use Tappet\Common\Exception\MissingConfigurationException;
 
 /**
  * Interface ConfigResolverInterface.

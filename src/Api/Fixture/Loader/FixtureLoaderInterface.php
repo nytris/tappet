@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Tappet\Api\Fixture\Loader;
 
-use Tappet\Core\Fixture\FixtureInterface;
-use Tappet\Core\Fixture\ModelInterface;
+use Tappet\Common\Fixture\FixtureInterface;
+use Tappet\Common\Fixture\ModelInterface;
 
 /**
  * Interface FixtureLoaderInterface.

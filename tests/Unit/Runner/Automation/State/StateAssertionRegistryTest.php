@@ -1,0 +1,176 @@
+<?php
+
+/*
+ * Tappet - Enjoyable GUI testing
+ * Copyright (c) Dan Phillimore (asmblah)
+ * https://github.com/nytris/tappet/
+ *
+ * Released under the MIT license.
+ * https://github.com/nytris/tappet/raw/main/MIT-LICENSE.txt
+ */
+
+declare(strict_types=1);
+
+namespace Tappet\Tests\Unit\Runner\Automation\State;
+
+use InvalidArgumentException;
+use Mockery\MockInterface;
+use Tappet\Runner\Assertion\StateAssertionInterface;
+use Tappet\Runner\Automation\AutomationInterface;
+use Tappet\Runner\Automation\State\StateAssertionHandlerInterface;
+use Tappet\Runner\Automation\State\StateAssertionRegistry;
+use Tappet\Runner\Standard\Assertion\ExpectState;
+use Tappet\Tests\AbstractTestCase;
+
+/**
+ * Class StateAssertionRegistryTest.
+ *
+ * @author Dan Phillimore <dan@ovms.co>
+ */
+class StateAssertionRegistryTest extends AbstractTestCase
+{
+    private AutomationInterface&MockInterface $automation;
+    /** @var StateAssertionRegistry<AutomationInterface> */
+    private StateAssertionRegistry $registry;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->automation = mock(AutomationInterface::class);
+
+        $this->registry = new StateAssertionRegistry();
+    }
+
+    public function testHandleStateAssertionDispatchesToRegisteredHandlerCallable(): void
+    {
+        $assertion = new ExpectState('my-state');
+        $receivedAssertion = null;
+        $this->registry->registerStateAssertionHandler('existent', mock(StateAssertionHandlerInterface::class, [
+            'getHandlers' => [
+                ExpectState::class => function (StateAssertionInterface $a) use (&$receivedAssertion): void {
+                    $receivedAssertion = $a;
+                },
+            ],
+        ]));
+
+        $this->registry->handleStateAssertion('existent', $assertion, $this->automation);
+
+        static::assertSame($assertion, $receivedAssertion);
+    }
+
+    public function testHandleStateAssertionThrowsWhenNoHandlerRegisteredForStateType(): void
+    {
+        $assertion = new ExpectState('my-state');
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('No state assertion handler registered for state type "existent"');
+
+        $this->registry->handleStateAssertion('existent', $assertion, $this->automation);
+    }
+
+    public function testHandleStateAssertionThrowsWhenHandlerDoesNotSupportAssertionType(): void
+    {
+        $assertion = new ExpectState('my-state');
+        $handler = mock(StateAssertionHandlerInterface::class, [
+            'getHandlers' => [],
+        ]);
+        $this->registry->registerStateAssertionHandler('existent', $handler);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            sprintf(
+                'State assertion handler for state type "existent" does not support assertion type "%s"',
+                ExpectState::class
+            )
+        );
+
+        $this->registry->handleStateAssertion('existent', $assertion, $this->automation);
+    }
+
+    public function testRegisterStateAssertionHandlerOverwritesPreviousHandlerForSameStateType(): void
+    {
+        $assertion = new ExpectState('my-state');
+        $firstHandlerCalled = false;
+        $secondHandlerCalled = false;
+        $firstHandler = mock(StateAssertionHandlerInterface::class, [
+            'getHandlers' => [
+                ExpectState::class => function () use (&$firstHandlerCalled): void {
+                    $firstHandlerCalled = true;
+                },
+            ],
+        ]);
+        $secondHandler = mock(StateAssertionHandlerInterface::class, [
+            'getHandlers' => [
+                ExpectState::class => function () use (&$secondHandlerCalled): void {
+                    $secondHandlerCalled = true;
+                },
+            ],
+        ]);
+        $this->registry->registerStateAssertionHandler('existent', $firstHandler);
+
+        $this->registry->registerStateAssertionHandler('existent', $secondHandler);
+        $this->registry->handleStateAssertion('existent', $assertion, $this->automation);
+
+        static::assertFalse($firstHandlerCalled);
+        static::assertTrue($secondHandlerCalled);
+    }
+
+    public function testHandleStateAssertionSupportsMultipleStateTypes(): void
+    {
+        $assertion = new ExpectState('my-state');
+        $existentHandlerCalled = false;
+        $visibleHandlerCalled = false;
+        $existentHandler = mock(StateAssertionHandlerInterface::class, [
+            'getHandlers' => [
+                ExpectState::class => function () use (&$existentHandlerCalled): void {
+                    $existentHandlerCalled = true;
+                },
+            ],
+        ]);
+        $visibleHandler = mock(StateAssertionHandlerInterface::class, [
+            'getHandlers' => [
+                ExpectState::class => function () use (&$visibleHandlerCalled): void {
+                    $visibleHandlerCalled = true;
+                },
+            ],
+        ]);
+        $this->registry->registerStateAssertionHandler('existent', $existentHandler);
+        $this->registry->registerStateAssertionHandler('visible', $visibleHandler);
+
+        $this->registry->handleStateAssertion('existent', $assertion, $this->automation);
+
+        static::assertTrue($existentHandlerCalled);
+        static::assertFalse($visibleHandlerCalled);
+    }
+
+    public function testRegisterStateAssertionHandlerMergesHandlersFromMultipleRegistrationsForSameStateType(): void
+    {
+        $expectStateAssertion = new ExpectState('my-state');
+        $otherAssertion = mock(StateAssertionInterface::class);
+        $expectStateHandlerCalled = false;
+        $otherHandlerCalled = false;
+        $expectStateHandler = mock(StateAssertionHandlerInterface::class, [
+            'getHandlers' => [
+                ExpectState::class => function () use (&$expectStateHandlerCalled): void {
+                    $expectStateHandlerCalled = true;
+                },
+            ],
+        ]);
+        $otherHandler = mock(StateAssertionHandlerInterface::class, [
+            'getHandlers' => [
+                $otherAssertion::class => function () use (&$otherHandlerCalled): void {
+                    $otherHandlerCalled = true;
+                },
+            ],
+        ]);
+        $this->registry->registerStateAssertionHandler('existent', $expectStateHandler);
+        $this->registry->registerStateAssertionHandler('existent', $otherHandler);
+
+        $this->registry->handleStateAssertion('existent', $expectStateAssertion, $this->automation);
+        $this->registry->handleStateAssertion('existent', $otherAssertion, $this->automation);
+
+        static::assertTrue($expectStateHandlerCalled);
+        static::assertTrue($otherHandlerCalled);
+    }
+}

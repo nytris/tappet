@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Tappet\Api\Fixture\Loader;
 
 use InvalidArgumentException;
-use Tappet\Core\Fixture\FixtureInterface;
-use Tappet\Core\Fixture\ModelInterface;
+use Tappet\Common\Fixture\FixtureInterface;
+use Tappet\Common\Fixture\ModelInterface;
 
 /**
  * Class DelegatingFixtureLoader.
@@ -27,7 +27,7 @@ class DelegatingFixtureLoader implements DelegatingFixtureLoaderInterface
     /**
      * @var array<class-string<FixtureInterface<ModelInterface>>, LoaderPairInterface<FixtureInterface<ModelInterface>, ModelInterface>>
      */
-    private $loaderPairs = [];
+    private array $loaderPairs = [];
 
     /**
      * @inheritDoc

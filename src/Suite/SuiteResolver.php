@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Tappet\Suite;
 
-use Tappet\Core\Exception\InvalidConfigurationException;
-use Tappet\Core\Exception\MissingConfigurationException;
+use Tappet\Common\Exception\InvalidConfigurationException;
+use Tappet\Common\Exception\MissingConfigurationException;
 
 /**
  * Class SuiteResolver.
@@ -29,36 +29,15 @@ use Tappet\Core\Exception\MissingConfigurationException;
 class SuiteResolver implements SuiteResolverInterface
 {
     /**
-     * @var string
-     */
-    private $configFileNameTemplate;
-    /**
-     * @var string
-     */
-    private $localConfigFileNameTemplate;
-    /**
-     * @var array<string>
-     */
-    private $paths;
-    /**
-     * @var class-string<TSuite>
-     */
-    private $suiteClass;
-
-    /**
      * @param class-string<TSuite> $suiteClass
      * @param array<string> $paths
      */
     public function __construct(
-        string $suiteClass,
-        array $paths,
-        string $configFileNameTemplate = 'tappet.{suite-name}.suite.php',
-        string $localConfigFileNameTemplate = 'tappet.{suite-name}.suite.local.php'
+        private readonly string $suiteClass,
+        private readonly array $paths,
+        private readonly string $configFileNameTemplate = 'tappet.{suite-name}.suite.php',
+        private readonly string $localConfigFileNameTemplate = 'tappet.{suite-name}.suite.local.php'
     ) {
-        $this->configFileNameTemplate = $configFileNameTemplate;
-        $this->localConfigFileNameTemplate = $localConfigFileNameTemplate;
-        $this->paths = $paths;
-        $this->suiteClass = $suiteClass;
     }
 
     /**
