@@ -17,7 +17,7 @@ use Tappet\Cli\Config\Config;
 use Tappet\Cli\Config\ConfigInterface;
 use Tappet\Cli\Config\ConfigResolver;
 use Tappet\Cli\Config\MissingConfig;
-use Tappet\Core\Exception\InvalidConfigurationException;
+use Tappet\Common\Exception\InvalidConfigurationException;
 use Tappet\Tests\AbstractTestCase;
 
 /**

@@ -1,0 +1,177 @@
+<?php
+
+/*
+ * Tappet - Enjoyable GUI testing
+ * Copyright (c) Dan Phillimore (asmblah)
+ * https://github.com/nytris/tappet/
+ *
+ * Released under the MIT license.
+ * https://github.com/nytris/tappet/raw/main/MIT-LICENSE.txt
+ */
+
+declare(strict_types=1);
+
+namespace Tappet\Tests\Unit\Runner\Automation\Field;
+
+use InvalidArgumentException;
+use Mockery\MockInterface;
+use Tappet\Runner\Action\FieldActionInterface;
+use Tappet\Runner\Automation\AutomationInterface;
+use Tappet\Runner\Automation\Field\FieldActionHandlerInterface;
+use Tappet\Runner\Automation\Field\FieldActionRegistry;
+use Tappet\Runner\Standard\Action\Clear;
+use Tappet\Runner\Standard\Action\Type;
+use Tappet\Tests\AbstractTestCase;
+
+/**
+ * Class FieldActionRegistryTest.
+ *
+ * @author Dan Phillimore <dan@ovms.co>
+ */
+class FieldActionRegistryTest extends AbstractTestCase
+{
+    private AutomationInterface&MockInterface $automation;
+    /** @var FieldActionRegistry<AutomationInterface> */
+    private FieldActionRegistry $registry;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->automation = mock(AutomationInterface::class);
+
+        $this->registry = new FieldActionRegistry();
+    }
+
+    public function testHandleFieldActionDispatchesToRegisteredHandlerCallable(): void
+    {
+        $action = new Type('my-field', 'some text');
+        $receivedAction = null;
+        $this->registry->registerFieldActionHandler('text', mock(FieldActionHandlerInterface::class, [
+            'getHandlers' => [
+                Type::class => function (FieldActionInterface $a) use (&$receivedAction): void {
+                    $receivedAction = $a;
+                },
+            ]
+        ]));
+
+        $this->registry->handleFieldAction('text', $action, $this->automation);
+
+        static::assertSame($action, $receivedAction);
+    }
+
+    public function testHandleFieldActionThrowsWhenNoHandlerRegisteredForFieldType(): void
+    {
+        $action = mock(FieldActionInterface::class);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('No field action handler registered for field type "text"');
+
+        $this->registry->handleFieldAction('text', $action, $this->automation);
+    }
+
+    public function testHandleFieldActionThrowsWhenHandlerDoesNotSupportActionType(): void
+    {
+        $action = new Type('my-field', 'some text');
+        $handler = mock(FieldActionHandlerInterface::class, [
+            'getHandlers' => [],
+        ]);
+        $this->registry->registerFieldActionHandler('text', $handler);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            sprintf(
+                'Field action handler for field type "text" does not support action type "%s"',
+                Type::class
+            )
+        );
+
+        $this->registry->handleFieldAction('text', $action, $this->automation);
+    }
+
+    public function testRegisterFieldActionHandlerOverwritesPreviousHandlerForSameFieldType(): void
+    {
+        $action = new Type('my-field', 'some text');
+        $firstHandlerCalled = false;
+        $secondHandlerCalled = false;
+        $firstHandler = mock(FieldActionHandlerInterface::class, [
+            'getHandlers' => [
+                Type::class => function () use (&$firstHandlerCalled): void {
+                    $firstHandlerCalled = true;
+                },
+            ],
+        ]);
+        $secondHandler = mock(FieldActionHandlerInterface::class, [
+            'getHandlers' => [
+                Type::class => function () use (&$secondHandlerCalled): void {
+                    $secondHandlerCalled = true;
+                },
+            ],
+        ]);
+        $this->registry->registerFieldActionHandler('text', $firstHandler);
+
+        $this->registry->registerFieldActionHandler('text', $secondHandler);
+        $this->registry->handleFieldAction('text', $action, $this->automation);
+
+        static::assertFalse($firstHandlerCalled);
+        static::assertTrue($secondHandlerCalled);
+    }
+
+    public function testRegisterFieldActionHandlerMergesHandlersFromMultipleRegistrationsForSameFieldType(): void
+    {
+        $typeAction = new Type('my-field', 'some text');
+        $clearAction = new Clear('my-field');
+        $typeHandlerCalled = false;
+        $clearHandlerCalled = false;
+        $typeHandler = mock(FieldActionHandlerInterface::class, [
+            'getHandlers' => [
+                Type::class => function () use (&$typeHandlerCalled): void {
+                    $typeHandlerCalled = true;
+                },
+            ],
+        ]);
+        $clearHandler = mock(FieldActionHandlerInterface::class, [
+            'getHandlers' => [
+                Clear::class => function () use (&$clearHandlerCalled): void {
+                    $clearHandlerCalled = true;
+                },
+            ],
+        ]);
+        $this->registry->registerFieldActionHandler('text', $typeHandler);
+        $this->registry->registerFieldActionHandler('text', $clearHandler);
+
+        $this->registry->handleFieldAction('text', $typeAction, $this->automation);
+        $this->registry->handleFieldAction('text', $clearAction, $this->automation);
+
+        static::assertTrue($typeHandlerCalled);
+        static::assertTrue($clearHandlerCalled);
+    }
+
+    public function testHandleFieldActionSupportsMultipleFieldTypes(): void
+    {
+        $typeAction = new Type('my-field', 'some text');
+        $typeHandlerCalled = false;
+        $comboHandlerCalled = false;
+        $textHandler = mock(FieldActionHandlerInterface::class, [
+            'getHandlers' => [
+                Type::class => function () use (&$typeHandlerCalled): void {
+                    $typeHandlerCalled = true;
+                },
+            ],
+        ]);
+        $comboHandler = mock(FieldActionHandlerInterface::class, [
+            'getHandlers' => [
+                Type::class => function () use (&$comboHandlerCalled): void {
+                    $comboHandlerCalled = true;
+                },
+            ],
+        ]);
+        $this->registry->registerFieldActionHandler('text', $textHandler);
+        $this->registry->registerFieldActionHandler('combobox', $comboHandler);
+
+        $this->registry->handleFieldAction('text', $typeAction, $this->automation);
+
+        static::assertTrue($typeHandlerCalled);
+        static::assertFalse($comboHandlerCalled);
+    }
+}

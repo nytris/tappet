@@ -22,34 +22,12 @@ namespace Tappet\Suite\Cli;
  */
 class CliOption implements CliOptionInterface
 {
-    /**
-     * @var string
-     */
-    private $description;
-    /**
-     * @var string
-     */
-    private $name;
-    /**
-     * @var bool
-     */
-    private $required;
-
-    /**
-     * @var bool
-     */
-    private $valueExpected;
-
     public function __construct(
-        string $name,
-        string $description,
-        bool $valueExpected = true,
-        bool $required = false
+        private readonly string $name,
+        private readonly string $description,
+        private readonly bool $valueExpected = true,
+        private readonly bool $required = false
     ) {
-        $this->description = $description;
-        $this->name = $name;
-        $this->required = $required;
-        $this->valueExpected = $valueExpected;
     }
 
     /**

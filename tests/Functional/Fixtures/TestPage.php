@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Tappet\Tests\Functional\Fixtures;
 
-use Tappet\Core\Environment\EnvironmentInterface;
-use Tappet\Core\Page\PageInterface;
+use Tappet\Runner\Environment\EnvironmentInterface;
+use Tappet\Runner\Page\PageInterface;
 
 /**
  * Class TestPage.

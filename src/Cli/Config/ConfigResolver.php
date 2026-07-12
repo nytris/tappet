@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Tappet\Cli\Config;
 
-use Tappet\Core\Exception\InvalidConfigurationException;
+use Tappet\Common\Exception\InvalidConfigurationException;
 
 /**
  * Class ConfigResolver.

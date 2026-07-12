@@ -19,6 +19,7 @@ use Tappet\Cli\Bin\TappetBinaryInterface;
 use Tappet\Cli\Config\ConfigInterface;
 use Tappet\Cli\Environment\Environment;
 use Tappet\Cli\Io\Output;
+use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Suite\SuiteInterface;
 use Tappet\Suite\SuiteResolver;
 
@@ -42,6 +43,7 @@ class DefaultImplementation implements ImplementationInterface
     public function createTappetBinary(string $configRoot, string $projectRoot): TappetBinaryInterface
     {
         $stderr = new Output(STDERR);
+        /** @var SuiteResolver<SuiteInterface<AutomationInterface>> $suiteResolver */
         $suiteResolver = new SuiteResolver(SuiteInterface::class, [$configRoot]);
         $runCommand = new RunCommand(
             $this->config,

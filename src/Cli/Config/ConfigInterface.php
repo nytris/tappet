@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Cli\Config;
 
 use Tappet\Cli\Implementation\ImplementationInterface;
-use Tappet\Core\Exception\MissingConfigurationException;
+use Tappet\Common\Exception\MissingConfigurationException;
 
 /**
  * Interface ConfigInterface.

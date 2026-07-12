@@ -13,13 +13,20 @@ declare(strict_types=1);
 
 namespace Tappet\Tests\Functional\Fixtures;
 
-use Tappet\Core\Automation\Field\FieldActionHandlerInterface;
-use Tappet\Core\Automation\Interaction\InteractionHandlerInterface;
-use Tappet\Core\Automation\Region\RegionAssertionHandlerInterface;
-use Tappet\Core\Automation\State\StateAssertionHandlerInterface;
+use Tappet\Runner\Assertion\RegionAssertionInterface;
+use Tappet\Runner\Automation\AutomationInterface;
+use Tappet\Runner\Automation\Field\FieldActionHandlerInterface;
+use Tappet\Runner\Automation\Field\FieldAssertionHandlerInterface;
+use Tappet\Runner\Automation\Interaction\InteractionHandlerInterface;
+use Tappet\Runner\Automation\Matcher\MatchHandlerInterface;
+use Tappet\Runner\Automation\Region\RegionAssertionHandlerInterface;
+use Tappet\Runner\Automation\State\StateAssertionHandlerInterface;
+use Tappet\Runner\Matcher\ContextInterface;
+use Tappet\Runner\Matcher\MatcherInterface;
 use Tappet\Suite\Cli\CliOption;
 use Tappet\Suite\Cli\CliSpec;
 use Tappet\Suite\Cli\CliSpecInterface;
+use Tappet\Suite\Plugin\PluginInterface;
 use Tappet\Suite\Result\ResultInterface;
 use Tappet\Suite\Result\TestResult;
 use Tappet\Suite\SuiteInterface;
@@ -29,10 +36,19 @@ use Tappet\Suite\SuiteInterface;
  *
  * Stub implementation of SuiteInterface for use in functional tests.
  *
+ * @implements SuiteInterface<AutomationInterface, ContextInterface>
+ *
  * @author Dan Phillimore <dan@ovms.co>
  */
 class TestSuiteTypeSuite implements SuiteInterface
 {
+    /**
+     * @inheritDoc
+     */
+    public function addPlugin(PluginInterface $plugin): void
+    {
+    }
+
     /**
      * @inheritDoc
      */
@@ -53,12 +69,30 @@ class TestSuiteTypeSuite implements SuiteInterface
     /**
      * @inheritDoc
      */
+    public function registerFieldAssertionHandler(string $fieldType, FieldAssertionHandlerInterface $handler): void
+    {
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function registerInteractionHandler(string $interactionType, InteractionHandlerInterface $handler): void
     {
     }
 
     /**
      * @inheritDoc
+     *
+     * @param MatchHandlerInterface<AutomationInterface, MatcherInterface, ContextInterface> $handler
+     */
+    public function registerMatchHandler(string $matcherType, MatchHandlerInterface $handler): void
+    {
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @param RegionAssertionHandlerInterface<AutomationInterface, RegionAssertionInterface> $handler
      */
     public function registerRegionAssertionHandler(string $regionType, RegionAssertionHandlerInterface $handler): void
     {

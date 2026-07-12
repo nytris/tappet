@@ -23,17 +23,11 @@ namespace Tappet\Suite\Cli;
 class CliSpec implements CliSpecInterface
 {
     /**
-     * @var CliOptionInterface[]
-     */
-    private $options;
-
-    /**
      * @param CliOptionInterface[] $options
      */
     public function __construct(
-        array $options = []
+        private readonly array $options = []
     ) {
-        $this->options = $options;
     }
 
     /**

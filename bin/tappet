@@ -15,8 +15,8 @@ declare(strict_types=1);
 use Composer\Autoload\ClassLoader;
 use Tappet\Cli\Bin\CliParser;
 use Tappet\Cli\Config\ConfigResolver;
-use Tappet\Core\Exception\ConfigurationExceptionInterface;
-use Tappet\Core\Project\ProjectRootResolver;
+use Tappet\Common\Exception\ConfigurationExceptionInterface;
+use Tappet\Runner\Project\ProjectRootResolver;
 
 require_once $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 
