@@ -53,8 +53,16 @@ class TestSuiteTypeSuite implements SuiteInterface
     /**
      * @inheritDoc
      */
-    public function run(string $projectRoot, string $suiteName, string $baseUrl, string $apiBaseUrl, string $apiKey, ?string $filter, array $options): ResultInterface
-    {
+    public function run(
+        string $projectRoot,
+        string $suiteName,
+        string $baseUrl,
+        string $apiBaseUrl,
+        string $apiKey,
+        bool $apiTlsVerification,
+        ?string $filter,
+        array $options
+    ): ResultInterface {
         $output = 'Test suite "' . $suiteName . '" output.';
 
         if ($baseUrl !== '') {

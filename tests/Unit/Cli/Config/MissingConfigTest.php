@@ -45,6 +45,11 @@ class MissingConfigTest extends AbstractTestCase
         static::assertNull($this->config->getDefaultApiKey());
     }
 
+    public function testGetDefaultApiTlsVerificationReturnsNull(): void
+    {
+        static::assertNull($this->config->getDefaultApiTlsVerification());
+    }
+
     public function testGetDefaultBaseUrlReturnsNull(): void
     {
         static::assertNull($this->config->getDefaultBaseUrl());
@@ -92,6 +97,14 @@ class MissingConfigTest extends AbstractTestCase
         $this->expectExceptionMessage('Cannot set default API key for a MissingConfig - did you mean to use Config?');
 
         $this->config->setDefaultApiKey('my-key');
+    }
+
+    public function testSetDefaultApiTlsVerificationRaisesException(): void
+    {
+        $this->expectException(MissingConfigurationException::class);
+        $this->expectExceptionMessage('Cannot set default API TLS verification for a MissingConfig - did you mean to use Config?');
+
+        $this->config->setDefaultApiTlsVerification(false);
     }
 
     public function testSetDefaultBaseUrlRaisesException(): void

@@ -28,6 +28,7 @@ class Config implements ConfigInterface
 {
     private ?string $defaultApiBaseUrl = null;
     private ?string $defaultApiKey = null;
+    private ?bool $defaultApiTlsVerification = null;
     private ?string $defaultBaseUrl = null;
     private ?string $defaultFilter = null;
     private ?string $defaultSuiteName = null;
@@ -47,6 +48,14 @@ class Config implements ConfigInterface
     public function getDefaultApiKey(): ?string
     {
         return $this->defaultApiKey;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDefaultApiTlsVerification(): ?bool
+    {
+        return $this->defaultApiTlsVerification;
     }
 
     /**
@@ -109,6 +118,16 @@ class Config implements ConfigInterface
     public function setDefaultApiKey(string $apiKey): ConfigInterface
     {
         $this->defaultApiKey = $apiKey;
+
+        return $this; // Fluent interface.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDefaultApiTlsVerification(bool $apiTlsVerification): ConfigInterface
+    {
+        $this->defaultApiTlsVerification = $apiTlsVerification;
 
         return $this; // Fluent interface.
     }

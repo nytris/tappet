@@ -53,6 +53,7 @@ interface SuiteInterface
      * @param string $baseUrl The base URL of the GUI application under test.
      * @param string $apiBaseUrl The base URL of the Tappet API.
      * @param string $apiKey The API key to authenticate with.
+     * @param bool $apiTlsVerification Whether TLS should be verified for calls to the Tappet API.
      * @param string|null $filter An optional filter to run only matching tests.
      * @param array<string, mixed> $options CLI options.
      * @throws ExceptionInterface When an error occurs during the run.
@@ -63,6 +64,7 @@ interface SuiteInterface
         string $baseUrl,
         string $apiBaseUrl,
         string $apiKey,
+        bool $apiTlsVerification,
         ?string $filter,
         array $options
     ): ResultInterface;

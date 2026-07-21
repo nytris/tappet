@@ -50,6 +50,14 @@ class MissingConfig implements ConfigInterface
     /**
      * @inheritDoc
      */
+    public function getDefaultApiTlsVerification(): ?bool
+    {
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getDefaultBaseUrl(): ?string
     {
         return null;
@@ -108,6 +116,16 @@ class MissingConfig implements ConfigInterface
     {
         throw new MissingConfigurationException(
             'Cannot set default API key for a MissingConfig - did you mean to use Config?'
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDefaultApiTlsVerification(bool $apiTlsVerification): ConfigInterface
+    {
+        throw new MissingConfigurationException(
+            'Cannot set default API TLS verification for a MissingConfig - did you mean to use Config?'
         );
     }
 

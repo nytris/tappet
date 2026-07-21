@@ -44,6 +44,11 @@ class ConfigTest extends AbstractTestCase
         static::assertNull($this->config->getDefaultApiKey());
     }
 
+    public function testGetDefaultApiTlsVerificationReturnsNullInitially(): void
+    {
+        static::assertNull($this->config->getDefaultApiTlsVerification());
+    }
+
     public function testGetDefaultBaseUrlReturnsNullInitially(): void
     {
         static::assertNull($this->config->getDefaultBaseUrl());
@@ -88,6 +93,20 @@ class ConfigTest extends AbstractTestCase
     public function testSetDefaultApiKeyReturnsConfigForFluentInterface(): void
     {
         $result = $this->config->setDefaultApiKey('my-secret-key');
+
+        static::assertSame($this->config, $result);
+    }
+
+    public function testSetDefaultApiTlsVerificationSetsTheApiTlsVerification(): void
+    {
+        $this->config->setDefaultApiTlsVerification(false);
+
+        static::assertFalse($this->config->getDefaultApiTlsVerification());
+    }
+
+    public function testSetDefaultApiTlsVerificationReturnsConfigForFluentInterface(): void
+    {
+        $result = $this->config->setDefaultApiTlsVerification(false);
 
         static::assertSame($this->config, $result);
     }

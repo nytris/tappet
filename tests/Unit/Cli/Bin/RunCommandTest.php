@@ -50,6 +50,7 @@ class RunCommandTest extends AbstractTestCase
         $this->config = mock(ConfigInterface::class, [
             'getDefaultApiBaseUrl' => null,
             'getDefaultApiKey' => null,
+            'getDefaultApiTlsVerification' => null,
             'getDefaultBaseUrl' => null,
             'getDefaultFilter' => null,
             'isPresent' => true,
@@ -91,6 +92,7 @@ class RunCommandTest extends AbstractTestCase
             Global options:
               --api-base-url <url>    Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).
               --api-key <key>         Tappet API key (or TAPPET_API_KEY env var).
+              --api-tls-verification  Whether to verify TLS for the Tappet API (or TAPPET_API_TLS_VERIFICATION env var).
               --base-url <url>        Base URL of the GUI application under test (or TAPPET_BASE_URL env var).
               --filter <pattern>      Filter tests by name pattern.
 
@@ -130,6 +132,7 @@ class RunCommandTest extends AbstractTestCase
             Global options:
               --api-base-url <url>    Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).
               --api-key <key>         Tappet API key (or TAPPET_API_KEY env var).
+              --api-tls-verification  Whether to verify TLS for the Tappet API (or TAPPET_API_TLS_VERIFICATION env var).
               --base-url <url>        Base URL of the GUI application under test (or TAPPET_BASE_URL env var).
               --filter <pattern>      Filter tests by name pattern.
 
@@ -165,6 +168,7 @@ class RunCommandTest extends AbstractTestCase
             Global options:
               --api-base-url <url>    Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).
               --api-key <key>         Tappet API key (or TAPPET_API_KEY env var).
+              --api-tls-verification  Whether to verify TLS for the Tappet API (or TAPPET_API_TLS_VERIFICATION env var).
               --base-url <url>        Base URL of the GUI application under test (or TAPPET_BASE_URL env var).
               --filter <pattern>      Filter tests by name pattern.
 
@@ -229,6 +233,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://api.example.com',
                 'test-key',
+                true,
                 null,
                 []
             )
@@ -261,6 +266,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://api.example.com',
                 'test-key',
+                true,
                 null,
                 []
             )
@@ -332,6 +338,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://api.example.com',
                 'test-key',
+                true,
                 null,
                 ['verbose' => true]
             )
@@ -411,6 +418,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://api.example.com',
                 'test-key',
+                true,
                 null,
                 ['sub-filter' => 'my-test']
             )
@@ -440,6 +448,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://option.example.com',
                 'my-api-key',
+                true,
                 null,
                 []
             )
@@ -472,6 +481,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://env.example.com',
                 'my-api-key',
+                true,
                 null,
                 []
             )
@@ -500,6 +510,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://option.example.com',
                 'my-api-key',
+                true,
                 null,
                 []
             )
@@ -522,6 +533,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://api.example.com',
                 'my-api-key',
+                true,
                 null,
                 []
             )
@@ -554,6 +566,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://api.example.com',
                 'env-api-key',
+                true,
                 null,
                 []
             )
@@ -582,6 +595,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://api.example.com',
                 'option-api-key',
+                true,
                 null,
                 []
             )
@@ -604,6 +618,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://option-gui.example.com',
                 'https://api.example.com',
                 'my-api-key',
+                true,
                 null,
                 []
             )
@@ -633,6 +648,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://env-gui.example.com',
                 'https://api.example.com',
                 'my-api-key',
+                true,
                 null,
                 []
             )
@@ -658,6 +674,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://option-gui.example.com',
                 'https://api.example.com',
                 'my-api-key',
+                true,
                 null,
                 []
             )
@@ -684,6 +701,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://api.example.com',
                 'my-api-key',
+                true,
                 'login',
                 []
             )
@@ -711,6 +729,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://api.example.com',
                 'my-api-key',
+                true,
                 null,
                 []
             )
@@ -738,6 +757,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://config-gui.example.com',
                 'https://api.example.com',
                 'my-api-key',
+                true,
                 null,
                 []
             )
@@ -764,6 +784,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://env-gui.example.com',
                 'https://api.example.com',
                 'my-api-key',
+                true,
                 null,
                 []
             )
@@ -788,6 +809,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://config-api.example.com',
                 'my-api-key',
+                true,
                 null,
                 []
             )
@@ -815,6 +837,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://env-api.example.com',
                 'my-api-key',
+                true,
                 null,
                 []
             )
@@ -839,6 +862,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://api.example.com',
                 'config-api-key',
+                true,
                 null,
                 []
             )
@@ -866,6 +890,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://api.example.com',
                 'env-api-key',
+                true,
                 null,
                 []
             )
@@ -873,6 +898,206 @@ class RunCommandTest extends AbstractTestCase
             ->andReturn($result);
 
         $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com']);
+    }
+
+    public function testRunDefaultsApiTlsVerificationToTrueWhenNotConfigured(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                true,
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'my-api-key',
+        ]);
+    }
+
+    public function testRunResolvesApiTlsVerificationFromOption(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                false,
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'my-api-key',
+            'api-tls-verification' => 'false',
+        ]);
+    }
+
+    public function testRunResolvesApiTlsVerificationFromBareOptionFlag(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_API_TLS_VERIFICATION')
+            ->andReturn('false');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                true,
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        // A bare `--api-tls-verification` flag (no value) is parsed as boolean `true` by the CLI parser.
+        $this->runCommand->run('my-suite', [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'my-api-key',
+            'api-tls-verification' => true,
+        ]);
+    }
+
+    public function testRunPrefersApiTlsVerificationOptionOverEnvironmentVariable(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_API_TLS_VERIFICATION')
+            ->andReturn('true');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                false,
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', [
+            'base-url' => 'https://gui.example.com',
+            'api-base-url' => 'https://api.example.com',
+            'api-key' => 'my-api-key',
+            'api-tls-verification' => 'false',
+        ]);
+    }
+
+    public function testRunResolvesApiTlsVerificationFromConfigDefault(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->config->allows('getDefaultApiTlsVerification')->andReturn(false);
+        $this->config->allows('getDefaultBaseUrl')->andReturn('https://gui.example.com');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                false,
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com', 'api-key' => 'my-api-key']);
+    }
+
+    public function testRunResolvesApiTlsVerificationFromEnvironmentVariable(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_API_TLS_VERIFICATION')
+            ->andReturn('false');
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_BASE_URL')
+            ->andReturn('https://gui.example.com');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                false,
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com', 'api-key' => 'my-api-key']);
+    }
+
+    public function testRunPrefersApiTlsVerificationEnvVarOverConfigDefault(): void
+    {
+        $suite = mock(SuiteInterface::class, ['getCliSpec' => new CliSpec([])]);
+        $result = mock(ResultInterface::class, ['getOutput' => '']);
+        $this->suiteResolver->allows('resolveSuite')->andReturn($suite);
+        $this->config->allows('getDefaultApiTlsVerification')->andReturn(true);
+        $this->config->allows('getDefaultBaseUrl')->andReturn('https://gui.example.com');
+        $this->environment->allows('getEnvironmentVariable')
+            ->with('TAPPET_API_TLS_VERIFICATION')
+            ->andReturn('false');
+
+        $suite->expects()
+            ->run(
+                '/my/project/root',
+                'my-suite',
+                'https://gui.example.com',
+                'https://api.example.com',
+                'my-api-key',
+                false,
+                null,
+                []
+            )
+            ->once()
+            ->andReturn($result);
+
+        $this->runCommand->run('my-suite', ['api-base-url' => 'https://api.example.com', 'api-key' => 'my-api-key']);
     }
 
     public function testRunResolvesFilterFromConfigDefault(): void
@@ -889,6 +1114,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://api.example.com',
                 'my-api-key',
+                true,
                 'config-filter',
                 []
             )
@@ -916,6 +1142,7 @@ class RunCommandTest extends AbstractTestCase
                 'https://gui.example.com',
                 'https://api.example.com',
                 'my-api-key',
+                true,
                 'option-filter',
                 []
             )
