@@ -15,33 +15,26 @@ namespace Tappet\Runner\Automation\Field;
 
 use InvalidArgumentException;
 use Tappet\Runner\Action\FieldActionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 
 /**
  * Class FieldActionRegistry.
  *
  * Maps field types to their action handlers and dispatches field actions accordingly.
  *
- * @template TAutomation of AutomationInterface
- * @template-implements FieldActionRegistryInterface<TAutomation>
- *
  * @author Dan Phillimore <dan@ovms.co>
  */
 class FieldActionRegistry implements FieldActionRegistryInterface
 {
     /**
-     * @var array<string, array<class-string<FieldActionInterface>, callable(FieldActionInterface, TAutomation): void>>
+     * @var array<string, array<class-string<FieldActionInterface>, callable(FieldActionInterface): void>>
      */
     private array $handlers = [];
 
     /**
      * @inheritDoc
      */
-    public function handleFieldAction(
-        string $fieldType,
-        FieldActionInterface $action,
-        AutomationInterface $automation
-    ): void {
+    public function handleFieldAction(string $fieldType, FieldActionInterface $action): void
+    {
         if (!array_key_exists($fieldType, $this->handlers)) {
             throw new InvalidArgumentException(
                 sprintf('No field action handler registered for field type "%s".', $fieldType)
@@ -61,7 +54,7 @@ class FieldActionRegistry implements FieldActionRegistryInterface
             );
         }
 
-        ($actionHandlers[$actionClass])($action, $automation);
+        ($actionHandlers[$actionClass])($action);
     }
 
     /**

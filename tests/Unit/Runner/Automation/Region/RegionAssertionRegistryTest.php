@@ -14,9 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Tests\Unit\Runner\Automation\Region;
 
 use InvalidArgumentException;
-use Mockery\MockInterface;
 use Tappet\Runner\Assertion\RegionAssertionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Runner\Automation\Region\RegionAssertionHandlerInterface;
 use Tappet\Runner\Automation\Region\RegionAssertionRegistry;
 use Tappet\Runner\Standard\Assertion\ExpectRegionContains;
@@ -30,15 +28,11 @@ use Tappet\Tests\AbstractTestCase;
  */
 class RegionAssertionRegistryTest extends AbstractTestCase
 {
-    private AutomationInterface&MockInterface $automation;
-    /** @var RegionAssertionRegistry<AutomationInterface> */
     private RegionAssertionRegistry $registry;
 
     public function setUp(): void
     {
         parent::setUp();
-
-        $this->automation = mock(AutomationInterface::class);
 
         $this->registry = new RegionAssertionRegistry();
     }
@@ -55,7 +49,7 @@ class RegionAssertionRegistryTest extends AbstractTestCase
             ],
         ]));
 
-        $this->registry->handleRegionAssertion('sidebar', $assertion, $this->automation);
+        $this->registry->handleRegionAssertion('sidebar', $assertion);
 
         static::assertSame($assertion, $receivedAssertion);
     }
@@ -67,7 +61,7 @@ class RegionAssertionRegistryTest extends AbstractTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No region assertion handler registered for region type "sidebar"');
 
-        $this->registry->handleRegionAssertion('sidebar', $assertion, $this->automation);
+        $this->registry->handleRegionAssertion('sidebar', $assertion);
     }
 
     public function testHandleRegionAssertionThrowsWhenHandlerDoesNotSupportAssertionType(): void
@@ -86,7 +80,7 @@ class RegionAssertionRegistryTest extends AbstractTestCase
             )
         );
 
-        $this->registry->handleRegionAssertion('sidebar', $assertion, $this->automation);
+        $this->registry->handleRegionAssertion('sidebar', $assertion);
     }
 
     public function testRegisterRegionAssertionHandlerOverwritesPreviousHandlerForSameRegionType(): void
@@ -111,7 +105,7 @@ class RegionAssertionRegistryTest extends AbstractTestCase
         $this->registry->registerRegionAssertionHandler('sidebar', $firstHandler);
 
         $this->registry->registerRegionAssertionHandler('sidebar', $secondHandler);
-        $this->registry->handleRegionAssertion('sidebar', $assertion, $this->automation);
+        $this->registry->handleRegionAssertion('sidebar', $assertion);
 
         static::assertFalse($firstHandlerCalled);
         static::assertTrue($secondHandlerCalled);
@@ -139,7 +133,7 @@ class RegionAssertionRegistryTest extends AbstractTestCase
         $this->registry->registerRegionAssertionHandler('sidebar', $sidebarHandler);
         $this->registry->registerRegionAssertionHandler('header', $headerHandler);
 
-        $this->registry->handleRegionAssertion('sidebar', $assertion, $this->automation);
+        $this->registry->handleRegionAssertion('sidebar', $assertion);
 
         static::assertTrue($sidebarHandlerCalled);
         static::assertFalse($headerHandlerCalled);
@@ -168,8 +162,8 @@ class RegionAssertionRegistryTest extends AbstractTestCase
         $this->registry->registerRegionAssertionHandler('sidebar', $containsHandler);
         $this->registry->registerRegionAssertionHandler('sidebar', $doesNotContainHandler);
 
-        $this->registry->handleRegionAssertion('sidebar', $containsAssertion, $this->automation);
-        $this->registry->handleRegionAssertion('sidebar', $doesNotContainAssertion, $this->automation);
+        $this->registry->handleRegionAssertion('sidebar', $containsAssertion);
+        $this->registry->handleRegionAssertion('sidebar', $doesNotContainAssertion);
 
         static::assertTrue($containsHandlerCalled);
         static::assertTrue($doesNotContainHandlerCalled);

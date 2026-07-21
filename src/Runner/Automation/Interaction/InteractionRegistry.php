@@ -15,33 +15,26 @@ namespace Tappet\Runner\Automation\Interaction;
 
 use InvalidArgumentException;
 use Tappet\Runner\Action\InteractionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 
 /**
  * Class InteractionRegistry.
  *
  * Maps interaction types to their handlers and dispatches interactions accordingly.
  *
- * @template TAutomation of AutomationInterface
- * @template-implements InteractionRegistryInterface<TAutomation>
- *
  * @author Dan Phillimore <dan@ovms.co>
  */
 class InteractionRegistry implements InteractionRegistryInterface
 {
     /**
-     * @var array<string, array<class-string<InteractionInterface>, callable(InteractionInterface, TAutomation): void>>
+     * @var array<string, array<class-string<InteractionInterface>, callable(InteractionInterface): void>>
      */
     private array $handlers = [];
 
     /**
      * @inheritDoc
      */
-    public function handleInteraction(
-        string $interactionType,
-        InteractionInterface $interaction,
-        AutomationInterface $automation
-    ): void {
+    public function handleInteraction(string $interactionType, InteractionInterface $interaction): void
+    {
         if (!array_key_exists($interactionType, $this->handlers)) {
             throw new InvalidArgumentException(
                 sprintf('No interaction handler registered for interaction type "%s".', $interactionType)
@@ -61,7 +54,7 @@ class InteractionRegistry implements InteractionRegistryInterface
             );
         }
 
-        ($interactionHandlers[$interactionClass])($interaction, $automation);
+        ($interactionHandlers[$interactionClass])($interaction);
     }
 
     /**

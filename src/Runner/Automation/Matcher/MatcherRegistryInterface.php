@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Tappet\Runner\Automation\Matcher;
 
-use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Runner\Matcher\ContextInterface;
 use Tappet\Runner\Matcher\MatcherInterface;
 
@@ -27,7 +26,6 @@ use Tappet\Runner\Matcher\MatcherInterface;
  * a `data-[...]-match-type` attribute). This allows a given MatcherInterface (e.g. Text)
  * to be handled differently for a particular column/region.
  *
- * @template TAutomation of AutomationInterface
  * @template TContext of ContextInterface
  *
  * @author Dan Phillimore <dan@ovms.co>
@@ -40,17 +38,12 @@ interface MatcherRegistryInterface
      * @param ContextInterface $context The automation-specific context (e.g. DOM element reference)
      *                                  wrapping the target to match against.
      */
-    public function handleMatcher(
-        string $matcherType,
-        MatcherInterface $matcher,
-        ContextInterface $context,
-        AutomationInterface $automation
-    ): void;
+    public function handleMatcher(string $matcherType, MatcherInterface $matcher, ContextInterface $context): void;
 
     /**
      * Registers a handler for the given matcher type.
      *
-     * @param MatchHandlerInterface<TAutomation, MatcherInterface, TContext> $handler
+     * @param MatchHandlerInterface<MatcherInterface, TContext> $handler
      */
     public function registerMatchHandler(string $matcherType, MatchHandlerInterface $handler): void;
 }

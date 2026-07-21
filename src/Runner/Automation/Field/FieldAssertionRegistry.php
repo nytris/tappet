@@ -15,33 +15,26 @@ namespace Tappet\Runner\Automation\Field;
 
 use InvalidArgumentException;
 use Tappet\Runner\Assertion\FieldAssertionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 
 /**
  * Class FieldAssertionRegistry.
  *
  * Maps field types to their assertion handlers and dispatches field assertions accordingly.
  *
- * @template TAutomation of AutomationInterface
- * @template-implements FieldAssertionRegistryInterface<TAutomation>
- *
  * @author Dan Phillimore <dan@ovms.co>
  */
 class FieldAssertionRegistry implements FieldAssertionRegistryInterface
 {
     /**
-     * @var array<string, array<class-string<FieldAssertionInterface>, callable(FieldAssertionInterface, TAutomation): void>>
+     * @var array<string, array<class-string<FieldAssertionInterface>, callable(FieldAssertionInterface): void>>
      */
     private array $handlers = [];
 
     /**
      * @inheritDoc
      */
-    public function handleFieldAssertion(
-        string $fieldType,
-        FieldAssertionInterface $assertion,
-        AutomationInterface $automation
-    ): void {
+    public function handleFieldAssertion(string $fieldType, FieldAssertionInterface $assertion): void
+    {
         if (!array_key_exists($fieldType, $this->handlers)) {
             throw new InvalidArgumentException(
                 sprintf('No field assertion handler registered for field type "%s"', $fieldType)
@@ -61,7 +54,7 @@ class FieldAssertionRegistry implements FieldAssertionRegistryInterface
             );
         }
 
-        ($assertionHandlers[$assertionClass])($assertion, $automation);
+        ($assertionHandlers[$assertionClass])($assertion);
     }
 
     /**

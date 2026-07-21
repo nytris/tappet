@@ -14,9 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Tests\Unit\Runner\Automation\Field;
 
 use InvalidArgumentException;
-use Mockery\MockInterface;
 use Tappet\Runner\Assertion\FieldAssertionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Runner\Automation\Field\FieldAssertionHandlerInterface;
 use Tappet\Runner\Automation\Field\FieldAssertionRegistry;
 use Tappet\Runner\Standard\Assertion\ExpectSelectedOption;
@@ -30,15 +28,11 @@ use Tappet\Tests\AbstractTestCase;
  */
 class FieldAssertionRegistryTest extends AbstractTestCase
 {
-    private AutomationInterface&MockInterface $automation;
-    /** @var FieldAssertionRegistry<AutomationInterface> */
     private FieldAssertionRegistry $registry;
 
     public function setUp(): void
     {
         parent::setUp();
-
-        $this->automation = mock(AutomationInterface::class);
 
         $this->registry = new FieldAssertionRegistry();
     }
@@ -55,7 +49,7 @@ class FieldAssertionRegistryTest extends AbstractTestCase
             ]
         ]));
 
-        $this->registry->handleFieldAssertion('text', $assertion, $this->automation);
+        $this->registry->handleFieldAssertion('text', $assertion);
 
         static::assertSame($assertion, $receivedAssertion);
     }
@@ -67,7 +61,7 @@ class FieldAssertionRegistryTest extends AbstractTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No field assertion handler registered for field type "text"');
 
-        $this->registry->handleFieldAssertion('text', $assertion, $this->automation);
+        $this->registry->handleFieldAssertion('text', $assertion);
     }
 
     public function testHandleFieldAssertionThrowsWhenHandlerDoesNotSupportAssertionType(): void
@@ -86,7 +80,7 @@ class FieldAssertionRegistryTest extends AbstractTestCase
             )
         );
 
-        $this->registry->handleFieldAssertion('text', $assertion, $this->automation);
+        $this->registry->handleFieldAssertion('text', $assertion);
     }
 
     public function testRegisterFieldAssertionHandlerOverwritesPreviousHandlerForSameFieldType(): void
@@ -111,7 +105,7 @@ class FieldAssertionRegistryTest extends AbstractTestCase
         $this->registry->registerFieldAssertionHandler('text', $firstHandler);
 
         $this->registry->registerFieldAssertionHandler('text', $secondHandler);
-        $this->registry->handleFieldAssertion('text', $assertion, $this->automation);
+        $this->registry->handleFieldAssertion('text', $assertion);
 
         static::assertFalse($firstHandlerCalled);
         static::assertTrue($secondHandlerCalled);
@@ -140,8 +134,8 @@ class FieldAssertionRegistryTest extends AbstractTestCase
         $this->registry->registerFieldAssertionHandler('text', $textHandler);
         $this->registry->registerFieldAssertionHandler('text', $selectedOptionHandler);
 
-        $this->registry->handleFieldAssertion('text', $textAssertion, $this->automation);
-        $this->registry->handleFieldAssertion('text', $selectedOptionAssertion, $this->automation);
+        $this->registry->handleFieldAssertion('text', $textAssertion);
+        $this->registry->handleFieldAssertion('text', $selectedOptionAssertion);
 
         static::assertTrue($textHandlerCalled);
         static::assertTrue($selectedOptionHandlerCalled);

@@ -1,6 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Property Tappet\\\\Tests\\\\Unit\\\\Suite\\\\SuiteResolverTest\\:\\:\\$suiteResolver \\(Tappet\\\\Suite\\\\SuiteResolver\\<Tappet\\\\Suite\\\\SuiteInterface\\<Tappet\\\\Runner\\\\Automation\\\\AutomationInterface\\, Tappet\\\\Runner\\\\Matcher\\\\ContextInterface\\>\\>\\) does not accept Tappet\\\\Suite\\\\SuiteResolver\\<Tappet\\\\Suite\\\\SuiteInterface\\>\\.$#"
+			message: "#^Property Tappet\\\\Tests\\\\Unit\\\\Suite\\\\SuiteResolverTest\\:\\:\\$suiteResolver \\(Tappet\\\\Suite\\\\SuiteResolver\\<Tappet\\\\Suite\\\\SuiteInterface\\<Tappet\\\\Runner\\\\Automation\\\\AutomationInterface\\>\\>\\) does not accept Tappet\\\\Suite\\\\SuiteResolver\\<Tappet\\\\Suite\\\\SuiteInterface\\>\\.$#"
 			count: 1
 			path: tests/Unit/Suite/SuiteResolverTest.php

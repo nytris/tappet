@@ -14,20 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Suite;
 
 use Tappet\Common\Exception\ExceptionInterface;
-use Tappet\Runner\Action\FieldActionInterface;
-use Tappet\Runner\Action\InteractionInterface;
-use Tappet\Runner\Assertion\FieldAssertionInterface;
-use Tappet\Runner\Assertion\RegionAssertionInterface;
-use Tappet\Runner\Assertion\StateAssertionInterface;
 use Tappet\Runner\Automation\AutomationInterface;
-use Tappet\Runner\Automation\Field\FieldActionHandlerInterface;
-use Tappet\Runner\Automation\Field\FieldAssertionHandlerInterface;
-use Tappet\Runner\Automation\Interaction\InteractionHandlerInterface;
-use Tappet\Runner\Automation\Matcher\MatchHandlerInterface;
-use Tappet\Runner\Automation\Region\RegionAssertionHandlerInterface;
-use Tappet\Runner\Automation\State\StateAssertionHandlerInterface;
-use Tappet\Runner\Matcher\ContextInterface;
-use Tappet\Runner\Matcher\MatcherInterface;
 use Tappet\Suite\Cli\CliSpecInterface;
 use Tappet\Suite\Plugin\PluginInterface;
 use Tappet\Suite\Result\ResultInterface;
@@ -41,7 +28,6 @@ use Tappet\Suite\Result\ResultInterface;
  * For example, a CypressSuite would implement this interface to allow defining test suites that use Cypress.
  *
  * @template TAutomation of AutomationInterface
- * @template TContext of ContextInterface = ContextInterface
  * @author Dan Phillimore <dan@ovms.co>
  */
 interface SuiteInterface
@@ -58,49 +44,6 @@ interface SuiteInterface
      * used for help display and validation of (un)recognised options.
      */
     public function getCliSpec(): CliSpecInterface;
-
-    /**
-     * Registers a handler for the given field type.
-     *
-     * @param FieldActionHandlerInterface<TAutomation, FieldActionInterface> $handler
-     */
-    public function registerFieldActionHandler(string $fieldType, FieldActionHandlerInterface $handler): void;
-
-    /**
-     * Registers a handler for assertions of the given field type.
-     *
-     * @param FieldAssertionHandlerInterface<TAutomation, FieldAssertionInterface> $handler
-     */
-    public function registerFieldAssertionHandler(string $fieldType, FieldAssertionHandlerInterface $handler): void;
-
-    /**
-     * Registers a handler for the given interaction type.
-     *
-     * @param InteractionHandlerInterface<TAutomation, InteractionInterface> $handler
-     */
-    public function registerInteractionHandler(string $interactionType, InteractionHandlerInterface $handler): void;
-
-    /**
-     * Registers a handler contributing matcher FQCN(s) (e.g. Text, ExactText) for the given matcher type.
-     * Note that the type will almost always be "default", unless overridden for a specific column/list/etc.
-     *
-     * @param MatchHandlerInterface<TAutomation, MatcherInterface, TContext> $handler
-     */
-    public function registerMatchHandler(string $matcherType, MatchHandlerInterface $handler): void;
-
-    /**
-     * Registers a handler for the given region type.
-     *
-     * @param RegionAssertionHandlerInterface<TAutomation, RegionAssertionInterface> $handler
-     */
-    public function registerRegionAssertionHandler(string $regionType, RegionAssertionHandlerInterface $handler): void;
-
-    /**
-     * Registers a handler for the given state type.
-     *
-     * @param StateAssertionHandlerInterface<TAutomation, StateAssertionInterface> $handler
-     */
-    public function registerStateAssertionHandler(string $stateType, StateAssertionHandlerInterface $handler): void;
 
     /**
      * Runs the test suite.

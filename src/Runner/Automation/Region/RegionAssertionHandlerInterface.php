@@ -14,14 +14,12 @@ declare(strict_types=1);
 namespace Tappet\Runner\Automation\Region;
 
 use Tappet\Runner\Assertion\RegionAssertionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 
 /**
  * Interface RegionAssertionHandlerInterface.
  *
  * Handles region assertions for one or more RegionAssertionInterface implementations.
  *
- * @template TAutomation of AutomationInterface
  * @template TAssertion of RegionAssertionInterface
  *
  * @author Dan Phillimore <dan@ovms.co>
@@ -35,7 +33,7 @@ interface RegionAssertionHandlerInterface
      * and each value is a callable that accepts an instance of that class and performs
      * the corresponding region assertion.
      *
-     * @return array<class-string<TAssertion>, callable(TAssertion, TAutomation): void>
+     * @return array<class-string<TAssertion>, callable(TAssertion): void>
      */
     public function getHandlers(): array;
 }

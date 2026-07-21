@@ -15,33 +15,26 @@ namespace Tappet\Runner\Automation\State;
 
 use InvalidArgumentException;
 use Tappet\Runner\Assertion\StateAssertionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 
 /**
  * Class StateAssertionRegistry.
  *
  * Maps state assertion types to their handlers and dispatches state assertions accordingly.
  *
- * @template TAutomation of AutomationInterface
- * @template-implements StateAssertionRegistryInterface<TAutomation>
- *
  * @author Dan Phillimore <dan@ovms.co>
  */
 class StateAssertionRegistry implements StateAssertionRegistryInterface
 {
     /**
-     * @var array<string, array<class-string<StateAssertionInterface>, callable(StateAssertionInterface, TAutomation): void>>
+     * @var array<string, array<class-string<StateAssertionInterface>, callable(StateAssertionInterface): void>>
      */
     private array $handlers = [];
 
     /**
      * @inheritDoc
      */
-    public function handleStateAssertion(
-        string $stateType,
-        StateAssertionInterface $assertion,
-        AutomationInterface $automation
-    ): void {
+    public function handleStateAssertion(string $stateType, StateAssertionInterface $assertion): void
+    {
         if (!array_key_exists($stateType, $this->handlers)) {
             throw new InvalidArgumentException(
                 sprintf('No state assertion handler registered for state type "%s".', $stateType)
@@ -61,7 +54,7 @@ class StateAssertionRegistry implements StateAssertionRegistryInterface
             );
         }
 
-        ($assertionHandlers[$assertionClass])($assertion, $automation);
+        ($assertionHandlers[$assertionClass])($assertion);
     }
 
     /**

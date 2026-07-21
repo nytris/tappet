@@ -15,33 +15,26 @@ namespace Tappet\Runner\Automation\Region;
 
 use InvalidArgumentException;
 use Tappet\Runner\Assertion\RegionAssertionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 
 /**
  * Class RegionAssertionRegistry.
  *
  * Maps region assertion types to their handlers and dispatches region assertions accordingly.
  *
- * @template TAutomation of AutomationInterface
- * @template-implements RegionAssertionRegistryInterface<TAutomation>
- *
  * @author Dan Phillimore <dan@ovms.co>
  */
 class RegionAssertionRegistry implements RegionAssertionRegistryInterface
 {
     /**
-     * @var array<string, array<class-string<RegionAssertionInterface>, callable(RegionAssertionInterface, TAutomation): void>>
+     * @var array<string, array<class-string<RegionAssertionInterface>, callable(RegionAssertionInterface): void>>
      */
     private array $handlers = [];
 
     /**
      * @inheritDoc
      */
-    public function handleRegionAssertion(
-        string $regionType,
-        RegionAssertionInterface $assertion,
-        AutomationInterface $automation
-    ): void {
+    public function handleRegionAssertion(string $regionType, RegionAssertionInterface $assertion): void
+    {
         if (!array_key_exists($regionType, $this->handlers)) {
             throw new InvalidArgumentException(
                 sprintf('No region assertion handler registered for region type "%s".', $regionType)
@@ -61,7 +54,7 @@ class RegionAssertionRegistry implements RegionAssertionRegistryInterface
             );
         }
 
-        ($assertionHandlers[$assertionClass])($assertion, $automation);
+        ($assertionHandlers[$assertionClass])($assertion);
     }
 
     /**
