@@ -37,6 +37,12 @@ interface ConfigInterface
     public function getDefaultApiKey(): ?string;
 
     /**
+     * Fetches whether TLS should be verified for calls to the Tappet API by default,
+     * or null if not configured (defaults to true).
+     */
+    public function getDefaultApiTlsVerification(): ?bool;
+
+    /**
      * Fetches the default GUI application base URL for Tappet, or null if none is configured.
      */
     public function getDefaultBaseUrl(): ?string;
@@ -74,6 +80,13 @@ interface ConfigInterface
      * @throws MissingConfigurationException When called on a missing config.
      */
     public function setDefaultApiKey(string $apiKey): self;
+
+    /**
+     * Sets whether TLS should be verified for calls to the Tappet API by default.
+     *
+     * @throws MissingConfigurationException When called on a missing config.
+     */
+    public function setDefaultApiTlsVerification(bool $apiTlsVerification): self;
 
     /**
      * Sets the default GUI application base URL for Tappet.

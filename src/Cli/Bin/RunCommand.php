@@ -40,7 +40,8 @@ class RunCommand implements RunCommandInterface
     /**
      * Options that are always valid regardless of the suite's CLI spec.
      */
-    private const GLOBAL_OPTION_NAMES = ['api-base-url', 'api-key', 'base-url', 'filter', 'help', 'project'];
+    private const GLOBAL_OPTION_NAMES =
+        ['api-base-url', 'api-key', 'api-tls-verification', 'base-url', 'filter', 'help', 'project'];
 
     /**
      * @param SuiteResolverInterface<SuiteInterface<AutomationInterface>> $suiteResolver
@@ -135,10 +136,20 @@ class RunCommand implements RunCommandInterface
         $baseUrl = (string) ($options['base-url'] ?? $this->environment->getEnvironmentVariable('TAPPET_BASE_URL') ?? $this->config->getDefaultBaseUrl() ?? '');
         $apiBaseUrl = (string) ($options['api-base-url'] ?? $this->environment->getEnvironmentVariable('TAPPET_API_BASE_URL') ?? $this->config->getDefaultApiBaseUrl() ?? '');
         $apiKey = (string) ($options['api-key'] ?? $this->environment->getEnvironmentVariable('TAPPET_API_KEY') ?? $this->config->getDefaultApiKey() ?? '');
+        $apiTlsVerification = filter_var(
+            $options['api-tls-verification'] ?? $this->environment->getEnvironmentVariable('TAPPET_API_TLS_VERIFICATION') ?? $this->config->getDefaultApiTlsVerification() ?? true,
+            FILTER_VALIDATE_BOOLEAN
+        );
         $filter = isset($options['filter']) ? (string) $options['filter'] : $this->config->getDefaultFilter();
 
         // Tidy up $options: it should only pass through custom options that the suite expects, as defined by its CliSpec.
-        unset($options['api-base-url'], $options['api-key'], $options['base-url'], $options['filter']);
+        unset(
+            $options['api-base-url'],
+            $options['api-key'],
+            $options['api-tls-verification'],
+            $options['base-url'],
+            $options['filter']
+        );
 
         try {
             if ($baseUrl === '') {
@@ -160,7 +171,7 @@ class RunCommand implements RunCommandInterface
             }
 
             // Run the test suite.
-            $result = $suite->run($this->projectRoot, $resolvedSuiteName, $baseUrl, $apiBaseUrl, $apiKey, $filter, $options);
+            $result = $suite->run($this->projectRoot, $resolvedSuiteName, $baseUrl, $apiBaseUrl, $apiKey, $apiTlsVerification, $filter, $options);
         } catch (ExceptionInterface $exception) {
             $this->stderr->write($exception->getMessage() . PHP_EOL);
 
@@ -183,6 +194,7 @@ Run 'tappet run <suite-name> --help' for suite-specific options.
 Global options:
   --api-base-url <url>    Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).
   --api-key <key>         Tappet API key (or TAPPET_API_KEY env var).
+  --api-tls-verification  Whether to verify TLS for the Tappet API (or TAPPET_API_TLS_VERIFICATION env var).
   --base-url <url>        Base URL of the GUI application under test (or TAPPET_BASE_URL env var).
   --filter <pattern>      Filter tests by name pattern.
 
@@ -223,6 +235,7 @@ HELP;
         $lines[] = 'Global options:';
         $lines[] = sprintf('  %-24s%s', '--api-base-url <url>', 'Base URL of the Tappet API (or TAPPET_API_BASE_URL env var).');
         $lines[] = sprintf('  %-24s%s', '--api-key <key>', 'Tappet API key (or TAPPET_API_KEY env var).');
+        $lines[] = sprintf('  %-24s%s', '--api-tls-verification', 'Whether to verify TLS for the Tappet API (or TAPPET_API_TLS_VERIFICATION env var).');
         $lines[] = sprintf('  %-24s%s', '--base-url <url>', 'Base URL of the GUI application under test (or TAPPET_BASE_URL env var).');
         $lines[] = sprintf('  %-24s%s', '--filter <pattern>', 'Filter tests by name pattern.');
         $lines[] = '';
