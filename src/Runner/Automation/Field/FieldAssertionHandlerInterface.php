@@ -14,14 +14,12 @@ declare(strict_types=1);
 namespace Tappet\Runner\Automation\Field;
 
 use Tappet\Runner\Assertion\FieldAssertionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 
 /**
  * Interface FieldAssertionHandlerInterface.
  *
  * Handles field assertions for one or more FieldAssertionInterface implementations.
  *
- * @template TAutomation of AutomationInterface
  * @template TAssertion of FieldAssertionInterface
  *
  * @author Dan Phillimore <dan@ovms.co>
@@ -35,7 +33,7 @@ interface FieldAssertionHandlerInterface
      * and each value is a callable that accepts an instance of that class and performs
      * the corresponding field assertion.
      *
-     * @return array<class-string<TAssertion>, callable(TAssertion, TAutomation): void>
+     * @return array<class-string<TAssertion>, callable(TAssertion): void>
      */
     public function getHandlers(): array;
 }

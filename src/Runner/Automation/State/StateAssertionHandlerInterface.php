@@ -14,14 +14,12 @@ declare(strict_types=1);
 namespace Tappet\Runner\Automation\State;
 
 use Tappet\Runner\Assertion\StateAssertionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 
 /**
  * Interface StateAssertionHandlerInterface.
  *
  * Handles state assertions for one or more StateAssertionInterface implementations.
  *
- * @template TAutomation of AutomationInterface
  * @template TAssertion of StateAssertionInterface
  *
  * @author Dan Phillimore <dan@ovms.co>
@@ -35,7 +33,7 @@ interface StateAssertionHandlerInterface
      * and each value is a callable that accepts an instance of that class and performs
      * the corresponding state assertion.
      *
-     * @return array<class-string<TAssertion>, callable(TAssertion, TAutomation): void>
+     * @return array<class-string<TAssertion>, callable(TAssertion): void>
      */
     public function getHandlers(): array;
 }

@@ -14,9 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Tests\Unit\Runner\Automation\State;
 
 use InvalidArgumentException;
-use Mockery\MockInterface;
 use Tappet\Runner\Assertion\StateAssertionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Runner\Automation\State\StateAssertionHandlerInterface;
 use Tappet\Runner\Automation\State\StateAssertionRegistry;
 use Tappet\Runner\Standard\Assertion\ExpectState;
@@ -29,15 +27,11 @@ use Tappet\Tests\AbstractTestCase;
  */
 class StateAssertionRegistryTest extends AbstractTestCase
 {
-    private AutomationInterface&MockInterface $automation;
-    /** @var StateAssertionRegistry<AutomationInterface> */
     private StateAssertionRegistry $registry;
 
     public function setUp(): void
     {
         parent::setUp();
-
-        $this->automation = mock(AutomationInterface::class);
 
         $this->registry = new StateAssertionRegistry();
     }
@@ -54,7 +48,7 @@ class StateAssertionRegistryTest extends AbstractTestCase
             ],
         ]));
 
-        $this->registry->handleStateAssertion('existent', $assertion, $this->automation);
+        $this->registry->handleStateAssertion('existent', $assertion);
 
         static::assertSame($assertion, $receivedAssertion);
     }
@@ -66,7 +60,7 @@ class StateAssertionRegistryTest extends AbstractTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No state assertion handler registered for state type "existent"');
 
-        $this->registry->handleStateAssertion('existent', $assertion, $this->automation);
+        $this->registry->handleStateAssertion('existent', $assertion);
     }
 
     public function testHandleStateAssertionThrowsWhenHandlerDoesNotSupportAssertionType(): void
@@ -85,7 +79,7 @@ class StateAssertionRegistryTest extends AbstractTestCase
             )
         );
 
-        $this->registry->handleStateAssertion('existent', $assertion, $this->automation);
+        $this->registry->handleStateAssertion('existent', $assertion);
     }
 
     public function testRegisterStateAssertionHandlerOverwritesPreviousHandlerForSameStateType(): void
@@ -110,7 +104,7 @@ class StateAssertionRegistryTest extends AbstractTestCase
         $this->registry->registerStateAssertionHandler('existent', $firstHandler);
 
         $this->registry->registerStateAssertionHandler('existent', $secondHandler);
-        $this->registry->handleStateAssertion('existent', $assertion, $this->automation);
+        $this->registry->handleStateAssertion('existent', $assertion);
 
         static::assertFalse($firstHandlerCalled);
         static::assertTrue($secondHandlerCalled);
@@ -138,7 +132,7 @@ class StateAssertionRegistryTest extends AbstractTestCase
         $this->registry->registerStateAssertionHandler('existent', $existentHandler);
         $this->registry->registerStateAssertionHandler('visible', $visibleHandler);
 
-        $this->registry->handleStateAssertion('existent', $assertion, $this->automation);
+        $this->registry->handleStateAssertion('existent', $assertion);
 
         static::assertTrue($existentHandlerCalled);
         static::assertFalse($visibleHandlerCalled);
@@ -167,8 +161,8 @@ class StateAssertionRegistryTest extends AbstractTestCase
         $this->registry->registerStateAssertionHandler('existent', $expectStateHandler);
         $this->registry->registerStateAssertionHandler('existent', $otherHandler);
 
-        $this->registry->handleStateAssertion('existent', $expectStateAssertion, $this->automation);
-        $this->registry->handleStateAssertion('existent', $otherAssertion, $this->automation);
+        $this->registry->handleStateAssertion('existent', $expectStateAssertion);
+        $this->registry->handleStateAssertion('existent', $otherAssertion);
 
         static::assertTrue($expectStateHandlerCalled);
         static::assertTrue($otherHandlerCalled);

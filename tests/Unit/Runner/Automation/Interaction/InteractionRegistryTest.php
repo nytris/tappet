@@ -14,9 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Tests\Unit\Runner\Automation\Interaction;
 
 use InvalidArgumentException;
-use Mockery\MockInterface;
 use Tappet\Runner\Action\InteractionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Runner\Automation\Interaction\InteractionHandlerInterface;
 use Tappet\Runner\Automation\Interaction\InteractionRegistry;
 use Tappet\Runner\Standard\Action\Enact;
@@ -30,15 +28,11 @@ use Tappet\Tests\AbstractTestCase;
  */
 class InteractionRegistryTest extends AbstractTestCase
 {
-    private AutomationInterface&MockInterface $automation;
-    /** @var InteractionRegistry<AutomationInterface> */
     private InteractionRegistry $registry;
 
     public function setUp(): void
     {
         parent::setUp();
-
-        $this->automation = mock(AutomationInterface::class);
 
         $this->registry = new InteractionRegistry();
     }
@@ -55,7 +49,7 @@ class InteractionRegistryTest extends AbstractTestCase
             ],
         ]));
 
-        $this->registry->handleInteraction('button', $interaction, $this->automation);
+        $this->registry->handleInteraction('button', $interaction);
 
         static::assertSame($interaction, $receivedInteraction);
     }
@@ -67,7 +61,7 @@ class InteractionRegistryTest extends AbstractTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No interaction handler registered for interaction type "button"');
 
-        $this->registry->handleInteraction('button', $interaction, $this->automation);
+        $this->registry->handleInteraction('button', $interaction);
     }
 
     public function testHandleInteractionThrowsWhenHandlerDoesNotSupportInteractionClass(): void
@@ -86,7 +80,7 @@ class InteractionRegistryTest extends AbstractTestCase
             )
         );
 
-        $this->registry->handleInteraction('button', $interaction, $this->automation);
+        $this->registry->handleInteraction('button', $interaction);
     }
 
     public function testRegisterInteractionHandlerOverwritesPreviousHandlerForSameInteractionType(): void
@@ -111,7 +105,7 @@ class InteractionRegistryTest extends AbstractTestCase
         $this->registry->registerInteractionHandler('button', $firstHandler);
 
         $this->registry->registerInteractionHandler('button', $secondHandler);
-        $this->registry->handleInteraction('button', $interaction, $this->automation);
+        $this->registry->handleInteraction('button', $interaction);
 
         static::assertFalse($firstHandlerCalled);
         static::assertTrue($secondHandlerCalled);
@@ -139,7 +133,7 @@ class InteractionRegistryTest extends AbstractTestCase
         $this->registry->registerInteractionHandler('button', $buttonHandler);
         $this->registry->registerInteractionHandler('link', $linkHandler);
 
-        $this->registry->handleInteraction('button', $interaction, $this->automation);
+        $this->registry->handleInteraction('button', $interaction);
 
         static::assertTrue($buttonHandlerCalled);
         static::assertFalse($linkHandlerCalled);
@@ -168,8 +162,8 @@ class InteractionRegistryTest extends AbstractTestCase
         $this->registry->registerInteractionHandler('button', $enactHandler);
         $this->registry->registerInteractionHandler('button', $hoverHandler);
 
-        $this->registry->handleInteraction('button', $enactInteraction, $this->automation);
-        $this->registry->handleInteraction('button', $hoverInteraction, $this->automation);
+        $this->registry->handleInteraction('button', $enactInteraction);
+        $this->registry->handleInteraction('button', $hoverInteraction);
 
         static::assertTrue($enactHandlerCalled);
         static::assertTrue($hoverHandlerCalled);

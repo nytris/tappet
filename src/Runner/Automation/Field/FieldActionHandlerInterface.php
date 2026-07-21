@@ -14,14 +14,12 @@ declare(strict_types=1);
 namespace Tappet\Runner\Automation\Field;
 
 use Tappet\Runner\Action\FieldActionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 
 /**
  * Interface FieldActionHandlerInterface.
  *
  * Handles field actions for a specific field type.
  *
- * @template TAutomation of AutomationInterface
  * @template TAction of FieldActionInterface
  *
  * @author Dan Phillimore <dan@ovms.co>
@@ -35,7 +33,7 @@ interface FieldActionHandlerInterface
      * and each value is a callable that accepts an instance of that class and performs
      * the corresponding field action.
      *
-     * @return array<class-string<TAction>, callable(TAction, TAutomation): void>
+     * @return array<class-string<TAction>, callable(TAction): void>
      */
     public function getHandlers(): array;
 }

@@ -14,14 +14,12 @@ declare(strict_types=1);
 namespace Tappet\Runner\Automation\Interaction;
 
 use Tappet\Runner\Action\InteractionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 
 /**
  * Interface InteractionHandlerInterface.
  *
  * Handles interactions for one or more InteractionInterface implementations.
  *
- * @template TAutomation of AutomationInterface
  * @template TInteraction of InteractionInterface
  *
  * @author Dan Phillimore <dan@ovms.co>
@@ -35,7 +33,7 @@ interface InteractionHandlerInterface
      * and each value is a callable that accepts an instance of that class and performs
      * the corresponding interaction.
      *
-     * @return array<class-string<TInteraction>, callable(TInteraction, TAutomation): void>
+     * @return array<class-string<TInteraction>, callable(TInteraction): void>
      */
     public function getHandlers(): array;
 }

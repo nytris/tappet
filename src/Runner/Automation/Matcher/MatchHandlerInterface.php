@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Tappet\Runner\Automation\Matcher;
 
-use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Runner\Matcher\ContextInterface;
 use Tappet\Runner\Matcher\MatcherInterface;
 
@@ -22,7 +21,6 @@ use Tappet\Runner\Matcher\MatcherInterface;
  *
  * Handles matching for one or more MatcherInterface implementations.
  *
- * @template TAutomation of AutomationInterface
  * @template TMatcher of MatcherInterface
  * @template TContext of ContextInterface
  *
@@ -34,11 +32,11 @@ interface MatchHandlerInterface
      * Returns a map of MatcherInterface FQCNs to callable handlers.
      *
      * Each key is the fully qualified class name of a MatcherInterface implementation,
-     * and each value is a callable that accepts an instance of that class, the automation-specific
-     * context (e.g. wrapping a Cypress chainable) representing the cell/item to match, and the automation,
+     * and each value is a callable that accepts an instance of that class and the automation-specific
+     * context (e.g. wrapping a Cypress chainable) representing the cell/item to match,
      * and performs the corresponding match.
      *
-     * @return array<class-string<TMatcher>, callable(TMatcher, TContext, TAutomation): void>
+     * @return array<class-string<TMatcher>, callable(TMatcher, TContext): void>
      */
     public function getHandlers(): array;
 }

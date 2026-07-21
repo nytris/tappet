@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Tappet\Runner\Automation\Matcher;
 
 use InvalidArgumentException;
-use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Runner\Matcher\ContextInterface;
 use Tappet\Runner\Matcher\MatcherInterface;
 
@@ -23,28 +22,23 @@ use Tappet\Runner\Matcher\MatcherInterface;
  *
  * Maps matcher types to their handlers and dispatches matching accordingly.
  *
- * @template TAutomation of AutomationInterface
  * @template TContext of ContextInterface
- * @template-implements MatcherRegistryInterface<TAutomation, TContext>
+ * @template-implements MatcherRegistryInterface<TContext>
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
 class MatcherRegistry implements MatcherRegistryInterface
 {
     /**
-     * @var array<string, array<class-string<MatcherInterface>, callable(MatcherInterface, TContext, TAutomation): void>>
+     * @var array<string, array<class-string<MatcherInterface>, callable(MatcherInterface, TContext): void>>
      */
     private array $handlers = [];
 
     /**
      * @inheritDoc
      */
-    public function handleMatcher(
-        string $matcherType,
-        MatcherInterface $matcher,
-        ContextInterface $context,
-        AutomationInterface $automation
-    ): void {
+    public function handleMatcher(string $matcherType, MatcherInterface $matcher, ContextInterface $context): void
+    {
         if (!array_key_exists($matcherType, $this->handlers)) {
             throw new InvalidArgumentException(
                 sprintf('No matcher handler registered for matcher type "%s".', $matcherType)
@@ -64,7 +58,7 @@ class MatcherRegistry implements MatcherRegistryInterface
             );
         }
 
-        ($matchHandlers[$matcherClass])($matcher, $context, $automation);
+        ($matchHandlers[$matcherClass])($matcher, $context);
     }
 
     /**

@@ -15,9 +15,8 @@ namespace Tappet\Tests\Unit\Runner\Automation\Matcher;
 
 use InvalidArgumentException;
 use Mockery\MockInterface;
-use Tappet\Runner\Automation\AutomationInterface;
-use Tappet\Runner\Automation\Matcher\MatchHandlerInterface;
 use Tappet\Runner\Automation\Matcher\MatcherRegistry;
+use Tappet\Runner\Automation\Matcher\MatchHandlerInterface;
 use Tappet\Runner\Matcher\ContextInterface;
 use Tappet\Runner\Matcher\MatcherInterface;
 use Tappet\Runner\Standard\Matcher\ExactText;
@@ -31,16 +30,14 @@ use Tappet\Tests\AbstractTestCase;
  */
 class MatcherRegistryTest extends AbstractTestCase
 {
-    private AutomationInterface&MockInterface $automation;
     private ContextInterface&MockInterface $context;
-    /** @var MatcherRegistry<AutomationInterface, ContextInterface> */
+    /** @var MatcherRegistry<ContextInterface> */
     private MatcherRegistry $registry;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->automation = mock(AutomationInterface::class);
         $this->context = mock(ContextInterface::class);
 
         $this->registry = new MatcherRegistry();
@@ -51,26 +48,22 @@ class MatcherRegistryTest extends AbstractTestCase
         $matcher = new Text('some text');
         $receivedMatcher = null;
         $receivedContext = null;
-        $receivedAutomation = null;
         $this->registry->registerMatchHandler('default', mock(MatchHandlerInterface::class, [
             'getHandlers' => [
-                Text::class => function (MatcherInterface $m, ContextInterface $c, AutomationInterface $a) use (
+                Text::class => function (MatcherInterface $matcher, ContextInterface $context) use (
                     &$receivedMatcher,
-                    &$receivedContext,
-                    &$receivedAutomation
+                    &$receivedContext
                 ): void {
-                    $receivedMatcher = $m;
-                    $receivedContext = $c;
-                    $receivedAutomation = $a;
+                    $receivedMatcher = $matcher;
+                    $receivedContext = $context;
                 },
             ],
         ]));
 
-        $this->registry->handleMatcher('default', $matcher, $this->context, $this->automation);
+        $this->registry->handleMatcher('default', $matcher, $this->context);
 
         static::assertSame($matcher, $receivedMatcher);
         static::assertSame($this->context, $receivedContext);
-        static::assertSame($this->automation, $receivedAutomation);
     }
 
     public function testHandleMatcherThrowsWhenNoHandlerRegisteredForMatcherType(): void
@@ -80,7 +73,7 @@ class MatcherRegistryTest extends AbstractTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No matcher handler registered for matcher type "default"');
 
-        $this->registry->handleMatcher('default', $matcher, $this->context, $this->automation);
+        $this->registry->handleMatcher('default', $matcher, $this->context);
     }
 
     public function testHandleMatcherThrowsWhenHandlerDoesNotSupportMatcher(): void
@@ -99,7 +92,7 @@ class MatcherRegistryTest extends AbstractTestCase
             )
         );
 
-        $this->registry->handleMatcher('default', $matcher, $this->context, $this->automation);
+        $this->registry->handleMatcher('default', $matcher, $this->context);
     }
 
     public function testRegisterMatchHandlerOverwritesPreviousHandlerForSameMatcherType(): void
@@ -124,7 +117,7 @@ class MatcherRegistryTest extends AbstractTestCase
         $this->registry->registerMatchHandler('default', $firstHandler);
 
         $this->registry->registerMatchHandler('default', $secondHandler);
-        $this->registry->handleMatcher('default', $matcher, $this->context, $this->automation);
+        $this->registry->handleMatcher('default', $matcher, $this->context);
 
         static::assertFalse($firstHandlerCalled);
         static::assertTrue($secondHandlerCalled);
@@ -152,7 +145,7 @@ class MatcherRegistryTest extends AbstractTestCase
         $this->registry->registerMatchHandler('default', $defaultHandler);
         $this->registry->registerMatchHandler('badge', $badgeHandler);
 
-        $this->registry->handleMatcher('default', $matcher, $this->context, $this->automation);
+        $this->registry->handleMatcher('default', $matcher, $this->context);
 
         static::assertTrue($defaultHandlerCalled);
         static::assertFalse($badgeHandlerCalled);
@@ -176,12 +169,12 @@ class MatcherRegistryTest extends AbstractTestCase
         ]);
         $this->registry->registerMatchHandler('default', $handler);
 
-        $this->registry->handleMatcher('default', $textMatcher, $this->context, $this->automation);
+        $this->registry->handleMatcher('default', $textMatcher, $this->context);
 
         static::assertTrue($textHandlerCalled);
         static::assertFalse($exactTextHandlerCalled);
 
-        $this->registry->handleMatcher('default', $exactTextMatcher, $this->context, $this->automation);
+        $this->registry->handleMatcher('default', $exactTextMatcher, $this->context);
 
         static::assertTrue($exactTextHandlerCalled);
     }
@@ -209,8 +202,8 @@ class MatcherRegistryTest extends AbstractTestCase
         $this->registry->registerMatchHandler('default', $textHandler);
         $this->registry->registerMatchHandler('default', $exactTextHandler);
 
-        $this->registry->handleMatcher('default', $textMatcher, $this->context, $this->automation);
-        $this->registry->handleMatcher('default', $exactTextMatcher, $this->context, $this->automation);
+        $this->registry->handleMatcher('default', $textMatcher, $this->context);
+        $this->registry->handleMatcher('default', $exactTextMatcher, $this->context);
 
         static::assertTrue($textHandlerCalled);
         static::assertTrue($exactTextHandlerCalled);

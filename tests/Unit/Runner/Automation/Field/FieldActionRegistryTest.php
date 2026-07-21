@@ -14,9 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Tests\Unit\Runner\Automation\Field;
 
 use InvalidArgumentException;
-use Mockery\MockInterface;
 use Tappet\Runner\Action\FieldActionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Runner\Automation\Field\FieldActionHandlerInterface;
 use Tappet\Runner\Automation\Field\FieldActionRegistry;
 use Tappet\Runner\Standard\Action\Clear;
@@ -30,15 +28,11 @@ use Tappet\Tests\AbstractTestCase;
  */
 class FieldActionRegistryTest extends AbstractTestCase
 {
-    private AutomationInterface&MockInterface $automation;
-    /** @var FieldActionRegistry<AutomationInterface> */
     private FieldActionRegistry $registry;
 
     public function setUp(): void
     {
         parent::setUp();
-
-        $this->automation = mock(AutomationInterface::class);
 
         $this->registry = new FieldActionRegistry();
     }
@@ -55,7 +49,7 @@ class FieldActionRegistryTest extends AbstractTestCase
             ]
         ]));
 
-        $this->registry->handleFieldAction('text', $action, $this->automation);
+        $this->registry->handleFieldAction('text', $action);
 
         static::assertSame($action, $receivedAction);
     }
@@ -67,7 +61,7 @@ class FieldActionRegistryTest extends AbstractTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No field action handler registered for field type "text"');
 
-        $this->registry->handleFieldAction('text', $action, $this->automation);
+        $this->registry->handleFieldAction('text', $action);
     }
 
     public function testHandleFieldActionThrowsWhenHandlerDoesNotSupportActionType(): void
@@ -86,7 +80,7 @@ class FieldActionRegistryTest extends AbstractTestCase
             )
         );
 
-        $this->registry->handleFieldAction('text', $action, $this->automation);
+        $this->registry->handleFieldAction('text', $action);
     }
 
     public function testRegisterFieldActionHandlerOverwritesPreviousHandlerForSameFieldType(): void
@@ -111,7 +105,7 @@ class FieldActionRegistryTest extends AbstractTestCase
         $this->registry->registerFieldActionHandler('text', $firstHandler);
 
         $this->registry->registerFieldActionHandler('text', $secondHandler);
-        $this->registry->handleFieldAction('text', $action, $this->automation);
+        $this->registry->handleFieldAction('text', $action);
 
         static::assertFalse($firstHandlerCalled);
         static::assertTrue($secondHandlerCalled);
@@ -140,8 +134,8 @@ class FieldActionRegistryTest extends AbstractTestCase
         $this->registry->registerFieldActionHandler('text', $typeHandler);
         $this->registry->registerFieldActionHandler('text', $clearHandler);
 
-        $this->registry->handleFieldAction('text', $typeAction, $this->automation);
-        $this->registry->handleFieldAction('text', $clearAction, $this->automation);
+        $this->registry->handleFieldAction('text', $typeAction);
+        $this->registry->handleFieldAction('text', $clearAction);
 
         static::assertTrue($typeHandlerCalled);
         static::assertTrue($clearHandlerCalled);
@@ -169,7 +163,7 @@ class FieldActionRegistryTest extends AbstractTestCase
         $this->registry->registerFieldActionHandler('text', $textHandler);
         $this->registry->registerFieldActionHandler('combobox', $comboHandler);
 
-        $this->registry->handleFieldAction('text', $typeAction, $this->automation);
+        $this->registry->handleFieldAction('text', $typeAction);
 
         static::assertTrue($typeHandlerCalled);
         static::assertFalse($comboHandlerCalled);

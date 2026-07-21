@@ -14,14 +14,11 @@ declare(strict_types=1);
 namespace Tappet\Runner\Automation\Region;
 
 use Tappet\Runner\Assertion\RegionAssertionInterface;
-use Tappet\Runner\Automation\AutomationInterface;
 
 /**
  * Interface RegionAssertionRegistryInterface.
  *
  * Maps region assertion types to their handlers and dispatches region assertions accordingly.
- *
- * @template TAutomation of AutomationInterface
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
@@ -30,16 +27,12 @@ interface RegionAssertionRegistryInterface
     /**
      * Dispatches the given region assertion to the handler registered for the given region type.
      */
-    public function handleRegionAssertion(
-        string $regionType,
-        RegionAssertionInterface $assertion,
-        AutomationInterface $automation
-    ): void;
+    public function handleRegionAssertion(string $regionType, RegionAssertionInterface $assertion): void;
 
     /**
      * Registers a handler for the given region type.
      *
-     * @param RegionAssertionHandlerInterface<TAutomation, RegionAssertionInterface> $handler
+     * @param RegionAssertionHandlerInterface<RegionAssertionInterface> $handler
      */
     public function registerRegionAssertionHandler(string $regionType, RegionAssertionHandlerInterface $handler): void;
 }
