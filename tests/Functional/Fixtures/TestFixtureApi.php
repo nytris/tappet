@@ -29,6 +29,10 @@ class TestFixtureApi
     /**
      * @var array<array{fixture: string, model: string}>
      */
+    public array $deferredPurgeModels = [];
+    /**
+     * @var array<array{fixture: string, model: string}>
+     */
     public array $purgedModels = [];
 
     /**
@@ -53,9 +57,11 @@ class TestFixtureApi
 
     /**
      * @param array<array{fixture: string, model: string}> $modelsToPurge
+     * @param array<array{fixture: string, model: string}> $modelsToDeferredPurge
      */
-    public function purge(array $modelsToPurge): void
+    public function purge(array $modelsToPurge, array $modelsToDeferredPurge): void
     {
         $this->purgedModels = $modelsToPurge;
+        $this->deferredPurgeModels = $modelsToDeferredPurge;
     }
 }

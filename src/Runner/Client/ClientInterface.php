@@ -51,6 +51,9 @@ interface ClientInterface
     /**
      * Purges all fixtures from the API.
      *
+     * Fixtures implementing DeferredPurgeFixtureInterface are sent to the API separately,
+     * as models to defer purging of rather than to purge immediately.
+     *
      * @param array<class-string<ModelInterface>, array<string, LoadedFixtureInterface<FixtureInterface<ModelInterface>, ModelInterface>>> $fixtureModels
      */
     public function purge(array $fixtureModels): void;
