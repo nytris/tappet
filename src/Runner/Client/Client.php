@@ -15,6 +15,7 @@ namespace Tappet\Runner\Client;
 
 use Tappet\Common\Event\EventDispatcherInterface;
 use Tappet\Common\Exception\FixtureModelMismatchException;
+use Tappet\Common\Fixture\DeferredPurgeFixtureInterface;
 use Tappet\Common\Fixture\FixtureInterface;
 use Tappet\Common\Fixture\ModelInterface;
 use Tappet\Runner\Configuration\ConfigurationInterface;
@@ -116,17 +117,25 @@ class Client implements ClientInterface
     {
         /** @var array{fixture: string, model: string}[] $modelsToPurge */
         $modelsToPurge = [];
+        /** @var array{fixture: string, model: string}[] $modelsToDeferredPurge */
+        $modelsToDeferredPurge = [];
 
         foreach ($fixtureModels as $loadedFixtures) {
             foreach ($loadedFixtures as $loadedFixture) {
-                // Models should be purged in reverse order of loading due to likely dependencies between them.
-                array_unshift($modelsToPurge, [
+                $entry = [
                     'fixture' => serialize($loadedFixture->getFixture()),
                     'model' => serialize($loadedFixture->getModel())
-                ]);
+                ];
+
+                // Models should be purged in reverse order of loading due to likely dependencies between them.
+                if ($loadedFixture->getFixture() instanceof DeferredPurgeFixtureInterface) {
+                    array_unshift($modelsToDeferredPurge, $entry);
+                } else {
+                    array_unshift($modelsToPurge, $entry);
+                }
             }
         }
 
-        $this->fixtureApi->purge($modelsToPurge);
+        $this->fixtureApi->purge($modelsToPurge, $modelsToDeferredPurge);
     }
 }

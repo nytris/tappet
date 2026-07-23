@@ -17,6 +17,7 @@ use Mockery;
 use Mockery\MockInterface;
 use Tappet\Common\Event\EventDispatcherInterface;
 use Tappet\Common\Exception\FixtureModelMismatchException;
+use Tappet\Common\Fixture\DeferredPurgeFixtureInterface;
 use Tappet\Common\Fixture\FixtureInterface;
 use Tappet\Common\Fixture\ModelInterface;
 use Tappet\Runner\Client\Client;
@@ -242,10 +243,13 @@ class ClientTest extends AbstractTestCase
         $loadedFixture2 = new LoadedFixture($fixture2, $model2, 'handle2');
 
         $this->fixtureApi->expects()
-            ->purge([
-                ['fixture' => serialize($fixture2), 'model' => serialize($model2)],
-                ['fixture' => serialize($fixture1), 'model' => serialize($model1)],
-            ])
+            ->purge(
+                [
+                    ['fixture' => serialize($fixture2), 'model' => serialize($model2)],
+                    ['fixture' => serialize($fixture1), 'model' => serialize($model1)],
+                ],
+                []
+            )
             ->once();
 
         $this->client->purge([
@@ -261,13 +265,67 @@ class ClientTest extends AbstractTestCase
         $loadedFixture = new LoadedFixture($fixture, $model, 'handle');
 
         $this->fixtureApi->expects()
-            ->purge([
-                ['fixture' => serialize($fixture), 'model' => serialize($model)],
-            ])
+            ->purge(
+                [
+                    ['fixture' => serialize($fixture), 'model' => serialize($model)],
+                ],
+                []
+            )
             ->once();
 
         $this->client->purge([
             ClientTestModel::class => ['handle' => $loadedFixture],
+        ]);
+    }
+
+    public function testPurgeSendsDeferredPurgeFixturesSeparatelyFromNormalOnes(): void
+    {
+        $fixture1 = new ClientTestFixture();
+        $fixture2 = new ClientTestDeferredPurgeFixture();
+        $model1 = new ClientTestModel();
+        $model2 = new ClientTestModel2();
+        $loadedFixture1 = new LoadedFixture($fixture1, $model1, 'handle1');
+        $loadedFixture2 = new LoadedFixture($fixture2, $model2, 'handle2');
+
+        $this->fixtureApi->expects()
+            ->purge(
+                [
+                    ['fixture' => serialize($fixture1), 'model' => serialize($model1)],
+                ],
+                [
+                    ['fixture' => serialize($fixture2), 'model' => serialize($model2)],
+                ]
+            )
+            ->once();
+
+        $this->client->purge([
+            ClientTestModel::class => ['handle1' => $loadedFixture1],
+            ClientTestModel2::class => ['handle2' => $loadedFixture2],
+        ]);
+    }
+
+    public function testPurgeSendsDeferredPurgeModelsInReverseOrder(): void
+    {
+        $fixture1 = new ClientTestDeferredPurgeFixture();
+        $fixture2 = new ClientTestDeferredPurgeFixture2();
+        $model1 = new ClientTestModel();
+        $model2 = new ClientTestModel2();
+        $loadedFixture1 = new LoadedFixture($fixture1, $model1, 'handle1');
+        $loadedFixture2 = new LoadedFixture($fixture2, $model2, 'handle2');
+
+        $this->fixtureApi->expects()
+            ->purge(
+                [],
+                [
+                    ['fixture' => serialize($fixture2), 'model' => serialize($model2)],
+                    ['fixture' => serialize($fixture1), 'model' => serialize($model1)],
+                ]
+            )
+            ->once();
+
+        $this->client->purge([
+            ClientTestModel::class => ['handle1' => $loadedFixture1],
+            ClientTestModel2::class => ['handle2' => $loadedFixture2],
         ]);
     }
 }
@@ -287,6 +345,28 @@ class ClientTestFixture implements FixtureInterface
  * @implements FixtureInterface<ClientTestModel2>
  */
 class ClientTestFixture2 implements FixtureInterface
+{
+    public static function getModelClass(): string
+    {
+        return ClientTestModel2::class;
+    }
+}
+
+/**
+ * @implements FixtureInterface<ClientTestModel>
+ */
+class ClientTestDeferredPurgeFixture implements DeferredPurgeFixtureInterface, FixtureInterface
+{
+    public static function getModelClass(): string
+    {
+        return ClientTestModel::class;
+    }
+}
+
+/**
+ * @implements FixtureInterface<ClientTestModel2>
+ */
+class ClientTestDeferredPurgeFixture2 implements DeferredPurgeFixtureInterface, FixtureInterface
 {
     public static function getModelClass(): string
     {
