@@ -15,7 +15,6 @@ namespace Tappet\Tests\Unit\Runner\Standard\Assertion;
 
 use Mockery;
 use Mockery\MockInterface;
-use Tappet\Runner\Action\ActionInterface;
 use Tappet\Runner\Arrangement\ArrangementInterface;
 use Tappet\Runner\Assertion\AssertionInterface;
 use Tappet\Runner\Environment\EnvironmentInterface;
@@ -49,11 +48,6 @@ class ExpectNewPageTest extends AbstractTestCase
     public function testImplementsArrangementInterface(): void
     {
         static::assertInstanceOf(ArrangementInterface::class, $this->assertion);
-    }
-
-    public function testImplementsActionInterface(): void
-    {
-        static::assertInstanceOf(ActionInterface::class, $this->assertion);
     }
 
     public function testImplementsAssertionInterface(): void

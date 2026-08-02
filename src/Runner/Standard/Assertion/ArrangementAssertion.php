@@ -16,31 +16,31 @@ namespace Tappet\Runner\Standard\Assertion;
 use Tappet\Runner\Arrangement\ArrangementInterface;
 use Tappet\Runner\Assertion\AssertionInterface;
 use Tappet\Runner\Environment\EnvironmentInterface;
-use Tappet\Runner\Page\PageInterface;
-use Tappet\Runner\Transition\PageTransition;
 
 /**
- * Class ExpectNewPage.
+ * Class ArrangementAssertion.
  *
- * Declares that the next logged transition must be a navigation to the given page's URL.
- * May be used directly in either the arrangement or assertion stage of a scenario; to check it
- * mid-act, wrap it explicitly in an AssertionAction.
+ * Performs an arrangement during the assertion stage of a scenario.
+ *
+ * Arrangements are normally only performed during the arrangement stage, but wrapping one
+ * explicitly in an ArrangementAssertion makes it obvious when this unusual placement
+ * is intentional.
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-class ExpectNewPage implements ArrangementInterface, AssertionInterface
+class ArrangementAssertion implements AssertionInterface
 {
     public function __construct(
-        private readonly PageInterface $page
+        private readonly ArrangementInterface $arrangement
     ) {
     }
 
     /**
-     * Fetches the page expected to be loaded.
+     * Fetches the arrangement that will be performed.
      */
-    public function getPage(): PageInterface
+    public function getArrangement(): ArrangementInterface
     {
-        return $this->page;
+        return $this->arrangement;
     }
 
     /**
@@ -48,6 +48,6 @@ class ExpectNewPage implements ArrangementInterface, AssertionInterface
      */
     public function perform(EnvironmentInterface $environment): void
     {
-        $environment->assertTransition(new PageTransition($this->page, $environment));
+        $this->arrangement->perform($environment);
     }
 }
