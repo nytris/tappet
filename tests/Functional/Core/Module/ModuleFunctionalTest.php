@@ -30,7 +30,9 @@ use Tappet\Runner\Standard\Arrangement\OpenPage;
 use Tappet\Runner\Standard\Assertion\ExpectNewPage;
 use Tappet\Runner\Standard\Assertion\ExpectRegionContains;
 use Tappet\Runner\Standard\Assertion\ExpectRegionDoesNotContain;
+use Tappet\Runner\Standard\Assertion\ExpectRemoteState;
 use Tappet\Runner\Standard\Assertion\ExpectState;
+use Tappet\Runner\Standard\Matcher\ExactText;
 use Tappet\Runner\Tappet;
 use Tappet\Runner\Transition\NavigationTransition;
 use Tappet\Runner\Transition\PageTransition;
@@ -209,6 +211,46 @@ class ModuleFunctionalTest extends AbstractFunctionalTestCase
         static::assertSame('assertTransitionLogEmpty', $this->automation->operations[0]['type']);
         static::assertSame('performStateAssertion', $this->automation->operations[1]['type']);
         static::assertSame($assertion, $this->automation->operations[1]['assertion']);
+    }
+
+    public function testSuiteScenarioCanAssertRemoteState(): void
+    {
+        $assertion = new ExpectRemoteState('order-status', new ExactText('Shipped'));
+
+        Tappet::describe('my module', [
+            Tappet::it('sees the expected order status')
+                ->assert($assertion),
+        ]);
+
+        $this->capturedModule->getScenarios()[0]->perform();
+
+        static::assertCount(2, $this->automation->operations);
+        static::assertSame('assertTransitionLogEmpty', $this->automation->operations[0]['type']);
+        static::assertSame('performRemoteStateAssertion', $this->automation->operations[1]['type']);
+        static::assertSame($assertion, $this->automation->operations[1]['assertion']);
+    }
+
+    public function testSuiteScenarioChecksForUnexpectedTransitionBeforeRemoteStateAssertionWhenPageHasBeenSet(): void
+    {
+        $assertion = new ExpectRemoteState('order-status', new ExactText('Shipped'));
+
+        Tappet::describe('my module', [
+            Tappet::it('checks order status after visiting')
+                ->arrange(new OpenPage(new TestPage('https://example.com/checkout')))
+                ->assert($assertion),
+        ]);
+
+        $this->capturedModule->getScenarios()[0]->perform();
+
+        static::assertCount(4, $this->automation->operations);
+        static::assertSame('assertTransitionLogEmpty', $this->automation->operations[0]['type']);
+        static::assertSame('visitPage', $this->automation->operations[1]['type']);
+        // Before the remote state assertion: wait for the expected transition.
+        static::assertSame('waitForTransition', $this->automation->operations[2]['type']);
+        static::assertInstanceOf(NavigationTransition::class, $this->automation->operations[2]['transition']);
+        static::assertSame('https://example.com/checkout', $this->automation->operations[2]['transition']->getUrl());
+        static::assertSame('performRemoteStateAssertion', $this->automation->operations[3]['type']);
+        static::assertSame($assertion, $this->automation->operations[3]['assertion']);
     }
 
     public function testSuiteScenarioCanPerformAssertionDuringActStage(): void

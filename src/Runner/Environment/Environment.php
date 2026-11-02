@@ -19,6 +19,7 @@ use Tappet\Runner\Action\FieldActionInterface;
 use Tappet\Runner\Action\InteractionInterface;
 use Tappet\Runner\Assertion\FieldAssertionInterface;
 use Tappet\Runner\Assertion\RegionAssertionInterface;
+use Tappet\Runner\Assertion\RemoteStateAssertionInterface;
 use Tappet\Runner\Assertion\StateAssertionInterface;
 use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Runner\Configuration\ConfigurationInterface;
@@ -190,6 +191,16 @@ class Environment implements EnvironmentInterface
         $this->assertCurrentTransition();
 
         $this->automation->performRegionAssertion($assertion);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function performRemoteStateAssertion(RemoteStateAssertionInterface $assertion): void
+    {
+        $this->assertCurrentTransition();
+
+        $this->automation->performRemoteStateAssertion($assertion);
     }
 
     /**

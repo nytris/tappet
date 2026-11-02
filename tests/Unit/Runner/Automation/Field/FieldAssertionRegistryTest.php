@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Tappet\Tests\Unit\Runner\Automation\Field;
 
-use InvalidArgumentException;
+use Tappet\Common\Exception\InvalidArgumentException;
 use Tappet\Runner\Assertion\FieldAssertionInterface;
 use Tappet\Runner\Automation\Field\FieldAssertionHandlerInterface;
 use Tappet\Runner\Automation\Field\FieldAssertionRegistry;

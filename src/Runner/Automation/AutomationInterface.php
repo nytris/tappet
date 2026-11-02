@@ -17,6 +17,7 @@ use Tappet\Runner\Action\FieldActionInterface;
 use Tappet\Runner\Action\InteractionInterface;
 use Tappet\Runner\Assertion\FieldAssertionInterface;
 use Tappet\Runner\Assertion\RegionAssertionInterface;
+use Tappet\Runner\Assertion\RemoteStateAssertionInterface;
 use Tappet\Runner\Assertion\StateAssertionInterface;
 use Tappet\Runner\Exception\TransitionLogNotEmptyException;
 use Tappet\Runner\Exception\TransitionWaitTimeoutException;
@@ -72,6 +73,12 @@ interface AutomationInterface
      * Performs the given region assertion.
      */
     public function performRegionAssertion(RegionAssertionInterface $assertion): void;
+
+    /**
+     * Performs the given remote state assertion, fetching the value from the backend
+     * via the Tappet API rather than from the DOM.
+     */
+    public function performRemoteStateAssertion(RemoteStateAssertionInterface $assertion): void;
 
     /**
      * Performs the given state assertion.

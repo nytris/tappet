@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Tappet\Tests\Unit\Runner\Automation\State;
 
-use InvalidArgumentException;
+use Tappet\Common\Exception\InvalidArgumentException;
 use Tappet\Runner\Assertion\StateAssertionInterface;
 use Tappet\Runner\Automation\State\StateAssertionHandlerInterface;
 use Tappet\Runner\Automation\State\StateAssertionRegistry;

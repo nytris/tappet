@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Tappet\Tests\Unit\Api\Fixture\Loader;
 
-use InvalidArgumentException;
 use Mockery\MockInterface;
 use Tappet\Api\Fixture\Loader\DelegatingFixtureLoader;
 use Tappet\Api\Fixture\Loader\FixtureLoaderInterface;
 use Tappet\Api\Fixture\Loader\LoaderPairInterface;
+use Tappet\Common\Exception\InvalidArgumentException;
 use Tappet\Common\Fixture\FixtureInterface;
 use Tappet\Common\Fixture\ModelInterface;
 use Tappet\Tests\AbstractTestCase;

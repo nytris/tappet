@@ -17,6 +17,7 @@ use Tappet\Runner\Action\FieldActionInterface;
 use Tappet\Runner\Action\InteractionInterface;
 use Tappet\Runner\Assertion\FieldAssertionInterface;
 use Tappet\Runner\Assertion\RegionAssertionInterface;
+use Tappet\Runner\Assertion\RemoteStateAssertionInterface;
 use Tappet\Runner\Assertion\StateAssertionInterface;
 use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Runner\Transition\TransitionInterface;
@@ -64,6 +65,11 @@ class TestAutomation implements AutomationInterface
     public function performRegionAssertion(RegionAssertionInterface $assertion): void
     {
         $this->operations[] = ['type' => 'performRegionAssertion', 'assertion' => $assertion];
+    }
+
+    public function performRemoteStateAssertion(RemoteStateAssertionInterface $assertion): void
+    {
+        $this->operations[] = ['type' => 'performRemoteStateAssertion', 'assertion' => $assertion];
     }
 
     public function performStateAssertion(StateAssertionInterface $assertion): void
