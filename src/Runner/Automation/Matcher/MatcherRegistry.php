@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Tappet\Runner\Automation\Matcher;
 
-use InvalidArgumentException;
+use Tappet\Common\Exception\InvalidArgumentException;
 use Tappet\Runner\Matcher\ContextInterface;
 use Tappet\Runner\Matcher\MatcherInterface;
 

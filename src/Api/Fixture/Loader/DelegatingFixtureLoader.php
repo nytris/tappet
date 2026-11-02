@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Tappet\Api\Fixture\Loader;
 
-use InvalidArgumentException;
+use Tappet\Common\Exception\InvalidArgumentException;
 use Tappet\Common\Fixture\FixtureInterface;
 use Tappet\Common\Fixture\ModelInterface;
 

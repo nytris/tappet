@@ -21,6 +21,7 @@ use Tappet\Runner\Action\FieldActionInterface;
 use Tappet\Runner\Action\InteractionInterface;
 use Tappet\Runner\Assertion\FieldAssertionInterface;
 use Tappet\Runner\Assertion\RegionAssertionInterface;
+use Tappet\Runner\Assertion\RemoteStateAssertionInterface;
 use Tappet\Runner\Assertion\StateAssertionInterface;
 use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Runner\Configuration\ConfigurationInterface;
@@ -323,6 +324,43 @@ class EnvironmentTest extends AbstractTestCase
 
         $this->environment->visitUrl('/page');
         $this->environment->performRegionAssertion($assertion);
+    }
+
+    public function testPerformRemoteStateAssertionDelegatesToAutomation(): void
+    {
+        $assertion = mock(RemoteStateAssertionInterface::class);
+        $this->automation->allows()
+            ->assertTransitionLogEmpty();
+
+        $this->automation->expects()
+            ->performRemoteStateAssertion($assertion)
+            ->once();
+
+        $this->environment->performRemoteStateAssertion($assertion);
+    }
+
+    public function testPerformRemoteStateAssertionWaitsForTransitionAfterVisitUrl(): void
+    {
+        $assertion = mock(RemoteStateAssertionInterface::class);
+        $this->automation->allows()
+            ->assertTransitionLogEmpty();
+        $this->automation->allows()
+            ->visitPage('https://my-app.example.com/page');
+
+        $this->automation->expects()
+            ->waitForTransition(Mockery::on(function (TransitionInterface $transition) {
+                return $transition instanceof NavigationTransition
+                    && $transition->getUrl() === 'https://my-app.example.com/page';
+            }))
+            ->once()
+            ->globally()->ordered();
+        $this->automation->expects()
+            ->performRemoteStateAssertion($assertion)
+            ->once()
+            ->globally()->ordered();
+
+        $this->environment->visitUrl('/page');
+        $this->environment->performRemoteStateAssertion($assertion);
     }
 
     public function testPerformStateAssertionDelegatesToAutomation(): void

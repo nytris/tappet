@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Tappet\Tests\Unit\Runner\Automation\Interaction;
 
-use InvalidArgumentException;
+use Tappet\Common\Exception\InvalidArgumentException;
 use Tappet\Runner\Action\InteractionInterface;
 use Tappet\Runner\Automation\Interaction\InteractionHandlerInterface;
 use Tappet\Runner\Automation\Interaction\InteractionRegistry;

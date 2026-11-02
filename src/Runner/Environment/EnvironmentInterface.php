@@ -19,6 +19,7 @@ use Tappet\Runner\Action\FieldActionInterface;
 use Tappet\Runner\Action\InteractionInterface;
 use Tappet\Runner\Assertion\FieldAssertionInterface;
 use Tappet\Runner\Assertion\RegionAssertionInterface;
+use Tappet\Runner\Assertion\RemoteStateAssertionInterface;
 use Tappet\Runner\Assertion\StateAssertionInterface;
 use Tappet\Runner\Automation\AutomationInterface;
 use Tappet\Runner\Fixture\ModelProviderInterface;
@@ -102,6 +103,16 @@ interface EnvironmentInterface extends ModelProviderInterface
      * For example, asserting that a given flash message is displayed.
      */
     public function performRegionAssertion(RegionAssertionInterface $assertion): void;
+
+    /**
+     * Performs the given remote state assertion.
+     *
+     * For example:
+     * - Asserting on a value deliberately never surfaced in the UI,
+     * - Or where it helps to decouple testing a UI from use of an unrelated view UI,
+     * fetched instead from the backend via a Tappet API endpoint,
+     */
+    public function performRemoteStateAssertion(RemoteStateAssertionInterface $assertion): void;
 
     /**
      * Performs the given state assertion.

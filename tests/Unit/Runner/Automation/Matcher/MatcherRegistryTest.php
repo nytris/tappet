@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Tappet\Tests\Unit\Runner\Automation\Matcher;
 
-use InvalidArgumentException;
 use Mockery\MockInterface;
+use Tappet\Common\Exception\InvalidArgumentException;
 use Tappet\Runner\Automation\Matcher\MatcherRegistry;
 use Tappet\Runner\Automation\Matcher\MatchHandlerInterface;
 use Tappet\Runner\Matcher\ContextInterface;

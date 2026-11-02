@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Tappet\Runner\Automation\Region;
 
-use InvalidArgumentException;
+use Tappet\Common\Exception\InvalidArgumentException;
 use Tappet\Runner\Assertion\RegionAssertionInterface;
 
 /**

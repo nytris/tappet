@@ -49,7 +49,7 @@ The `data-ui-interaction="save"` attribute is the stable contract between the ap
 
 ## Core abstractions
 
-Tappet organises its abstractions into four categories, grouped under **Controls** and **Feedback**:
+Tappet organises its abstractions into six categories, grouped under **Controls** and **Feedback**:
 
 | Direction | Type                  | HTML attribute        | Purpose                                                                                      |
 |-----------|-----------------------|-----------------------|----------------------------------------------------------------------------------------------|
@@ -57,6 +57,7 @@ Tappet organises its abstractions into four categories, grouped under **Controls
 | Feedback  | **Field Assertions**  | `data-ui-field`       | Assert a field's value, e.g. the content of a text input                                     |
 | Control   | **Interactions**      | `data-ui-interaction` | Click buttons and follow links without caring about their selector or position               |
 | Feedback  | **Region Assertions** | `data-ui-region`      | Assert the display, e.g. text content of named page areas such as headings or flash messages |
+| Feedback  | **Remote State Assertions** | *(none - fetched via API)* | Assert a value fetched from the backend directly, rather than from the DOM                 |
 | Feedback  | **State Assertions**  | `data-ui-state`       | Assert application state by presence of a marker element, decoupled from copy                |
 
 ## Specs in PHP
@@ -286,6 +287,7 @@ Tappet::describe('User Management -> User', [
 | `ExpectNewPage($page)`                              | Assert the browser has navigated to the URL built by the given page              |
 | `ExpectRegionContains($handle, $text)`              | Assert the named region's text includes the given string                         |
 | `ExpectRegionDoesNotContain($handle, $text)`        | Assert the named region's text does not include the given string                 |
+| `ExpectRemoteState($handle, $matcherOrText)`        | Assert a value fetched from the backend via the Tappet API matches the given matcher or exact string (see below) |
 | `ExpectState($handle)`                              | Assert a named state element is present in the DOM                               |
 | `ExpectTable($handle, $rows)`                       | Assert a table region contains given rows (see below)                            |
 | Custom `AssertionInterface`                         | Application-specific assertions                                                  |
@@ -382,6 +384,57 @@ use Tappet\Runner\Standard\Matcher\ExactText;
 
 new ExpectList('recent-items', [new ExactText('First item'), new ExactText('Second item')])
 ```
+
+#### `ExpectRemoteState` usage
+
+Most assertions check something presented on the page. `ExpectRemoteState` instead fetches a value from the backend
+via the Tappet API, for a value that's either deliberately never surfaced in the UI (e.g. for security reasons), or
+is shown on a page unrelated to the scenario under test, where it would be wasteful - or risk coupling unrelated
+tests together - to navigate there just to read it:
+
+```php
+<?php
+
+use Tappet\Runner\Standard\Assertion\ExpectRemoteState;
+
+// ...
+
+new ExpectRemoteState('order-status', 'Shipped')
+```
+
+A plain string, as above, is a shorthand for an `ExactText` matcher - pass any other `MatcherInterface`
+implementation instead for other kinds of match:
+
+```php
+<?php
+
+use Tappet\Runner\Standard\Assertion\ExpectRemoteState;
+use Tappet\Runner\Standard\Matcher\Text;
+
+// ...
+
+new ExpectRemoteState('order-status', new Text('Shipped'))
+```
+
+The `'order-status'` handle is resolved on the backend by a `RemoteStateProviderInterface` implementation
+registered by your application:
+
+```php
+class OrderStateProvider implements RemoteStateProviderInterface
+{
+    public function getProviders(): array
+    {
+        return [
+            'order-status' => fn (): string => $this->orders->getLatest()->getStatus(),
+        ];
+    }
+}
+```
+
+Unlike field, region, and state assertions - which sniff a `$type` from the DOM to find their handler - a remote
+state assertion has nothing on the page to sniff, so its handler is instead dispatched purely by its own class name.
+See your adapter package's (e.g. [Cypress adapter]) documentation for how to register the handler that fetches the
+value over the API and dispatches it to a matcher.
 
 ## Transitions
 
