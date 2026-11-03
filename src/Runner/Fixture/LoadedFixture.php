@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Runner\Fixture;
 
 use Tappet\Common\Fixture\FixtureInterface;
+use Tappet\Common\Fixture\LoadedFixture as CommonLoadedFixture;
 use Tappet\Common\Fixture\ModelInterface;
 
 /**
@@ -21,54 +22,15 @@ use Tappet\Common\Fixture\ModelInterface;
  *
  * Loaded fixtures are fixtures that have been loaded via the API.
  *
+ * @deprecated Use {@see \Tappet\Common\Fixture\LoadedFixture} instead.
+ *
  * @template TFixture of FixtureInterface<TModel>
  * @template TModel of ModelInterface
+ * @extends CommonLoadedFixture<TFixture, TModel>
  * @implements LoadedFixtureInterface<TFixture, TModel>
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-class LoadedFixture implements LoadedFixtureInterface
+class LoadedFixture extends CommonLoadedFixture implements LoadedFixtureInterface
 {
-    /**
-     * @param TFixture $fixture
-     * @param TModel $model
-     */
-    public function __construct(
-        private readonly FixtureInterface $fixture,
-        private readonly ModelInterface $model,
-        private readonly string $handle
-    ) {
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getFixture(): FixtureInterface
-    {
-        return $this->fixture;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getHandle(): string
-    {
-        return $this->handle;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getModel(): ModelInterface
-    {
-        return $this->model;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getModelClass(): string
-    {
-        return $this->model::class;
-    }
 }

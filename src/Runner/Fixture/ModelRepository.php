@@ -15,6 +15,7 @@ namespace Tappet\Runner\Fixture;
 
 use RuntimeException;
 use Tappet\Common\Fixture\FixtureInterface;
+use Tappet\Common\Fixture\LoadedFixtureInterface;
 use Tappet\Common\Fixture\ModelInterface;
 use Tappet\Runner\Client\ClientInterface;
 

@@ -15,11 +15,11 @@ namespace Tappet\Tests\Unit\Runner\Event;
 
 use Mockery\MockInterface;
 use Tappet\Common\Fixture\FixtureInterface;
+use Tappet\Common\Fixture\LoadedFixture;
+use Tappet\Common\Fixture\LoadedFixtureInterface;
 use Tappet\Common\Fixture\ModelInterface;
 use Tappet\Runner\Configuration\ConfigurationInterface;
 use Tappet\Runner\Event\FixtureLoadEvent;
-use Tappet\Runner\Fixture\LoadedFixture;
-use Tappet\Runner\Fixture\LoadedFixtureInterface;
 use Tappet\Tests\AbstractTestCase;
 
 /**

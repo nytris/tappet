@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Tappet\Runner\Fixture;
 
 use Tappet\Common\Fixture\FixtureInterface;
+use Tappet\Common\Fixture\LoadedFixtureInterface as CommonLoadedFixtureInterface;
 use Tappet\Common\Fixture\ModelInterface;
 
 /**
@@ -21,36 +22,14 @@ use Tappet\Common\Fixture\ModelInterface;
  *
  * Loaded fixtures are fixtures that have been loaded via the API.
  *
+ * @deprecated Use {@see \Tappet\Common\Fixture\LoadedFixtureInterface} instead.
+ *
  * @template-covariant TFixture of FixtureInterface<TModel>
  * @template-covariant TModel of ModelInterface
+ * @template-extends CommonLoadedFixtureInterface<TFixture, TModel>
  *
  * @author Dan Phillimore <dan@ovms.co>
  */
-interface LoadedFixtureInterface
+interface LoadedFixtureInterface extends CommonLoadedFixtureInterface
 {
-    /**
-     * Fetches the fixture loaded via the API.
-     *
-     * @return TFixture
-     */
-    public function getFixture(): FixtureInterface;
-
-    /**
-     * Fetches the handle of the fixture loaded via the API.
-     */
-    public function getHandle(): string;
-
-    /**
-     * Fetches the model for the loaded fixture.
-     *
-     * @return ModelInterface
-     */
-    public function getModel(): ModelInterface;
-
-    /**
-     * Fetches the class name of the model for the loaded fixture.
-     *
-     * @return class-string<TModel>
-     */
-    public function getModelClass(): string;
 }

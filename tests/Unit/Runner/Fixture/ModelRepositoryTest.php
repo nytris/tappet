@@ -17,9 +17,9 @@ use Mockery\MockInterface;
 use RuntimeException;
 use Tappet\Common\Exception\FixtureModelMismatchException;
 use Tappet\Common\Fixture\FixtureInterface;
+use Tappet\Common\Fixture\LoadedFixture;
 use Tappet\Common\Fixture\ModelInterface;
 use Tappet\Runner\Client\ClientInterface;
-use Tappet\Runner\Fixture\LoadedFixture;
 use Tappet\Runner\Fixture\ModelRepository;
 use Tappet\Tests\AbstractTestCase;
 
