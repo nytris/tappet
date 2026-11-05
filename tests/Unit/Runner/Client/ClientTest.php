@@ -19,12 +19,12 @@ use Tappet\Common\Event\EventDispatcherInterface;
 use Tappet\Common\Exception\FixtureModelMismatchException;
 use Tappet\Common\Fixture\DeferredPurgeFixtureInterface;
 use Tappet\Common\Fixture\FixtureInterface;
+use Tappet\Common\Fixture\LoadedFixture;
+use Tappet\Common\Fixture\LoadedFixtureInterface;
 use Tappet\Common\Fixture\ModelInterface;
 use Tappet\Runner\Client\Client;
 use Tappet\Runner\Configuration\ConfigurationInterface;
 use Tappet\Runner\Event\FixtureLoadEvent;
-use Tappet\Runner\Fixture\LoadedFixture;
-use Tappet\Runner\Fixture\LoadedFixtureInterface;
 use Tappet\Tests\AbstractTestCase;
 
 /**
@@ -59,13 +59,13 @@ class ClientTest extends AbstractTestCase
         );
     }
 
-    public function testLoadFixtureCallsFixtureApiWithFixtureClassAndSerialisedFixture(): void
+    public function testLoadFixtureCallsFixtureApiWithFixtureClassAndSerialisedFixtureAndHandle(): void
     {
         $fixture = new ClientTestFixture();
         $model = new ClientTestModel();
 
         $this->fixtureApi->expects()
-            ->loadFixture($fixture::class, serialize($fixture))
+            ->loadFixture($fixture::class, serialize($fixture), 'myHandle')
             ->once()
             ->andReturn(serialize($model));
 

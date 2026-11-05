@@ -17,11 +17,11 @@ use Tappet\Common\Event\EventDispatcherInterface;
 use Tappet\Common\Exception\FixtureModelMismatchException;
 use Tappet\Common\Fixture\DeferredPurgeFixtureInterface;
 use Tappet\Common\Fixture\FixtureInterface;
+use Tappet\Common\Fixture\LoadedFixture;
+use Tappet\Common\Fixture\LoadedFixtureInterface;
 use Tappet\Common\Fixture\ModelInterface;
 use Tappet\Runner\Configuration\ConfigurationInterface;
 use Tappet\Runner\Event\FixtureLoadEvent;
-use Tappet\Runner\Fixture\LoadedFixture;
-use Tappet\Runner\Fixture\LoadedFixtureInterface;
 
 /**
  * Class Client.
@@ -47,7 +47,7 @@ class Client implements ClientInterface
      */
     public function loadFixture(string $handle, FixtureInterface $fixture): LoadedFixtureInterface
     {
-        $response = $this->fixtureApi->loadFixture($fixture::class, serialize($fixture));
+        $response = $this->fixtureApi->loadFixture($fixture::class, serialize($fixture), $handle);
 
         $model = unserialize($response);
 

@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace Tappet\Runner\Client;
 
 use Tappet\Common\Fixture\FixtureInterface;
+use Tappet\Common\Fixture\LoadedFixtureInterface;
 use Tappet\Common\Fixture\ModelInterface;
-use Tappet\Runner\Fixture\LoadedFixtureInterface;
 
 /**
  * Interface ClientInterface.

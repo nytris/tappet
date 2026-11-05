@@ -15,9 +15,9 @@ namespace Tappet\Runner\Event;
 
 use Tappet\Common\Event\EventInterface;
 use Tappet\Common\Fixture\FixtureInterface;
+use Tappet\Common\Fixture\LoadedFixtureInterface;
 use Tappet\Common\Fixture\ModelInterface;
 use Tappet\Runner\Configuration\ConfigurationInterface;
-use Tappet\Runner\Fixture\LoadedFixtureInterface;
 
 /**
  * Class FixtureLoadEvent.
